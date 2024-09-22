@@ -1,0 +1,20 @@
+{
+  "staging": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-authcomidin-staging-e4cea-authRole",
+      "UnauthRoleArn": "arn:aws:iam::025066283494:role/amplify-authcomidin-staging-e4cea-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::025066283494:role/amplify-authcomidin-staging-e4cea-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-authcomidin-staging-e4cea-deployment",
+      "UnauthRoleName": "amplify-authcomidin-staging-e4cea-unauthRole",
+      "StackName": "amplify-authcomidin-staging-e4cea",
+      "StackId": "arn:aws:cloudformation:us-east-1:025066283494:stack/amplify-authcomidin-staging-e4cea/686944e0-60f8-11ef-a52b-12e561930bc7",
+      "AmplifyAppId": "dpf7d6ffuy9en"
+    },
+    "categories": {
+      "auth": {
+        "Authcomidin": {}
+      }
+    }
+  }
+}

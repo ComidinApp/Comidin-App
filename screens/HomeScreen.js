@@ -1,10 +1,12 @@
 import React from "react";
-import { View, Text, TextInput, ScrollView } from "react-native";
+import { View, Text, TextInput, ScrollView, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import * as Icon from "react-native-feather";
 import { themeColors } from "../theme/index.js";
 import Categories from "./../components/categories.js";
+import Promotions from "./../components/promotions.js";
+import Restaurant from "./../components/restaurants.js";
 import FeaturedRow from "./../components/featuredRow.js";
 import { useGetAllCommerceCategoryQuery } from "../redux/apis/commerce.js";
 
@@ -32,7 +34,7 @@ const FeaturedCategories = () => {
   } = useGetAllCommerceCategoryQuery();
 
   if (isLoadingCategory) {
-    return <Text>Cargando categorías...</Text>;
+    return <ActivityIndicator size="large" color={themeColors.bgColorSecondary(1)} />;
   }
 
   if (errorCategory) {
@@ -40,7 +42,7 @@ const FeaturedCategories = () => {
   }
 
   return (
-    <View className="mt-5">
+    <View>
       {dataCategory.map((item) => (
         <CategoryRow key={item.id} category={item} />
       ))}
@@ -57,7 +59,7 @@ const CategoryRow = ({ category }) => {
   } = useGetAllCommerceByCategoryIdQuery(category.id);
 
   if (isLoadingCommerce) {
-    return <Text>Cargando comercios para {category.name}...</Text>;
+    return  <ActivityIndicator size="large" color={themeColors.bgColorSecondary(1)} />;
   }
 
   if (errorCommerce) {
@@ -76,7 +78,8 @@ const CategoryRow = ({ category }) => {
 export default function Navigation() {
   return (
     <SafeAreaView
-      style={{ backgroundColor: themeColors.bgColorPrimary(1), paddingTop: 10 }}
+      style={{paddingTop: 10, paddingBottom: 20}}
+      className="bg-comidin-light-orange"
     >
       <StatusBar style="dark-content" />
       <SearchBar />
@@ -86,8 +89,12 @@ export default function Navigation() {
           paddingBottom: 20,
         }}
       >
+        <Text className="text-xl font-bold p-4">José Manuel Estrada</Text>
+        <Promotions />
+        <Text className="text-xl font-bold p-4">¿Qué vas a comer hoy?</Text>
         <Categories />
-        <FeaturedCategories />
+        <Text className="text-xl font-bold p-4">Locales</Text>
+        <Restaurant />
       </ScrollView>
     </SafeAreaView>
   );

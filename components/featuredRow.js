@@ -5,14 +5,11 @@ import RestaurantCard from './restaurantCard.js';
 export default function FeaturedRow({title, restaurants, description}) {
   return (
     <View>
-        <View className='flex-row items-center justify-between px-4 mt-4'> 
+        <View className='flex-row items-center justify-between px-4'> 
             <View>
                 <Text className='text-lg font-semibold'>{title}</Text>
                 <Text className='text-gray-400'>{description}</Text>
             </View>
-            <TouchableOpacity>
-                <Text className='text-black'>Ver más</Text>
-            </TouchableOpacity>
         </View>
         <ScrollView 
             horizontal 

@@ -27,11 +27,13 @@ export default function Categories() {
                     let btnClass = isActive? 'bg-gray-600': 'bg-gray-200';
                     let textClass = isActive? 'text-gray-800 font-semibold': 'text-gray-500';
                     return (
-                        <View key={index} className='flex justify-center items-center mr-5'>
+                        <View key={index} className='flex justify-center items-center mr-5 '>
                             <TouchableOpacity 
-                                className={'p-1 rounded-full shadow bg-gray-200 ' + btnClass}
+                                className={'p-1 shadow bg-comidin-dark-orange rounded-2xl'}
                                 onPress={()=> setActiveCategories(category.id)}>
-                                    <Image source={category.image} style={{width: 45, height: 45}}/>
+                                    <Image 
+                                      source={require('../assets/images/comboPanaderia.jpg')} 
+                                      style={{width: 140, height: 140, borderRadius: 10}}/>
                             </TouchableOpacity>
                             <Text className={'text-sm ' + textClass}>{category.name}</Text>
                         </View>)

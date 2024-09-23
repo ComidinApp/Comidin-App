@@ -5,7 +5,7 @@ module.exports = {
     extend: {
       colors: {
         'comidin-dark-orange': '#D67030',
-        'comidin-light-orange': '#FEFAE0',
+        'comidin-light-orange': '#FEFAE0 ',
       }
     },
   },

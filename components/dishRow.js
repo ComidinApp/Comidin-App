@@ -17,11 +17,11 @@ export default function DishRow({item}) {
     }
   return (
     <View className='flex-row items-center bg-white p-3 rounded-3xl shadow-2xl mx-2'>
-      <Image source={item.image} className='rounded-3xl' style={{height: 100, width:100}}/>
+      <Image source={{uri: item.product.image_url}} className='rounded-3xl' style={{height: 100, width:100}}/>
         <View className='flex flex-1 space-y-3'>
             <View className='pl-3'>
-                <Text className='text-xl font-bold'>{item.name}</Text>
-                <Text className='text-gray-700'>{item.description}</Text>
+                <Text className='text-xl font-bold'>{item.product.name}</Text>
+                <Text className='text-gray-700'>{item.product.description}</Text>
             </View>
             <View className='flex-row justify-between pl-3 items-center'>
                 <Text className='text-green-700 font-bold text-lg'>${item.price}</Text>

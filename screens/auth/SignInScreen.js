@@ -13,17 +13,17 @@ import SocialSignInButtons from "../../components/formElements/SocialSignInButto
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
-import { AuthContext } from '../../app/navigation.js';
+import { useAuth } from '../../context/AuthContext.js';
 
 
 export default function SignInScreen() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const { height } = useWindowDimensions();
   const navigation = useNavigation();
 
-  const { signIn } = useContext(AuthContext);
+  const { signIn } = useAuth();
+
 
   const onForgotPasswordPressed = () => {
     navigation.navigate("ForgotPassword");

@@ -22,7 +22,6 @@ export default function AuthGoogle() {
 
   async function handleEffect() {
     const user = await getLocalUser();
-    console.log("user", user);
     if (!user) {
       if (response?.type === "success") {
         // setToken(response.authentication.accessToken);

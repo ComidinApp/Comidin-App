@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { View, Text, TextInput, ScrollView, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
@@ -11,6 +11,22 @@ import RestaurantsColumn from "./../components/restaurantColumn.js";
 import FeaturedRow from "./../components/featuredRow.js";
 import { useGetAllCommerceCategoryQuery } from "../redux/apis/commerce.js";
 import SafeArea from "./../components/safeArea.js";
+import { useAuth  } from '../context/AuthContext.js';
+import CustomButton from "../components/formElements/CustomButton.js";
+
+const ButtonSignOut = () => {
+  const { signOut } = useAuth();
+
+  const handleLogout = () => {
+    signOut();
+  };
+
+  return(
+    <View className="w-full px-10 py-5">
+      <CustomButton text="Cerrar sesión" onPress={handleLogout} />
+    </View>
+  )
+}
 
 const SearchBar = () => (
   <View className="flex-row items-center space-x-2 px-4 py-2">
@@ -27,55 +43,6 @@ const SearchBar = () => (
     </View>
   </View>
 );
-
-const FeaturedCategories = () => {
-  const {
-    data: dataCategory = [],
-    isLoading: isLoadingCategory,
-    error: errorCategory,
-  } = useGetAllCommerceCategoryQuery();
-
-  if (isLoadingCategory) {
-    return <ActivityIndicator size="large" color={themeColors.bgColorSecondary(1)} />;
-  }
-
-  if (errorCategory) {
-    return <Text>Error al cargar categorías: {errorCategory.message}</Text>;
-  }
-
-  return (
-    <View>
-      {dataCategory.map((item) => (
-        <CategoryRow key={item.id} category={item} />
-      ))}
-    </View>
-  );
-};
-
-const CategoryRow = ({ category }) => {
-  const { useGetAllCommerceByCategoryIdQuery } = require("../redux/apis/commerce.js");
-  const {
-    data: dataCommerce = [],
-    isLoading: isLoadingCommerce,
-    error: errorCommerce,
-  } = useGetAllCommerceByCategoryIdQuery(category.id);
-
-  if (isLoadingCommerce) {
-    return  <ActivityIndicator size="large" color={themeColors.bgColorSecondary(1)} />;
-  }
-
-  if (errorCommerce) {
-    return <Text>Error al cargar comercios para {category.name}: {errorCommerce.message}</Text>;
-  }
-
-  return (
-    <FeaturedRow
-      title={category.name}
-      restaurants={dataCommerce}
-      description={category.description}
-    />
-  );
-};
 
 export default function Navigation() {
   return (
@@ -98,6 +65,7 @@ export default function Navigation() {
         <Categories />
         <Text className="text-xl font-bold p-4">Locales</Text>
         <Restaurant />
+        <ButtonSignOut />
       </ScrollView>
     {/* </SafeAreaView> */}
     </SafeArea>

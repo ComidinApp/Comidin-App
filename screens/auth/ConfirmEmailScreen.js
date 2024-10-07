@@ -15,7 +15,6 @@ export default function ConfirmEmailScreen() {
   const navigation = useNavigation();
 
   const onConfirmPressed = () => {
-    console.log(email, cognitoPool);
     const user = new CognitoUser({
       Username: email,
       Pool: cognitoPool,

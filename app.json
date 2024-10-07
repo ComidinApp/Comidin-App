@@ -39,16 +39,6 @@
       "eas": {
         "projectId": "f3c58870-d78c-471c-ba95-b83bd3898bb7"
       }
-    },
-    "fonts": [
-      {
-        "asset": "./assets/fonts/Baloo2-Regular.ttf",
-        "family": "Baloo2-Regular"
-      },
-      {
-        "asset": "./assets/fonts/Baloo2-ExtraBold.ttf",
-        "family": "Baloo2-Extrabold"
-      }
-    ]
+    }
   }
 }

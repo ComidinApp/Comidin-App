@@ -17,7 +17,7 @@ export default function SafeArea({ children, textHeader }) {
           height: "100%",
         }}
       >
-        <Text className="text-white font-bold text-2xl px-4 pb-2 font-baloo2-extrabold">{textHeader}</Text>
+        <Text className="text-white font-bold text-2xl px-4 pb-2">{textHeader}</Text>
         <View className="bg-comidin-light-orange h-full">
             {children}
         </View>

@@ -10,9 +10,10 @@ import React, { useEffect, useState } from "react";
 import { useGetAllCommerceByCategoryIdQuery } from "../redux/apis/commerce.js";
 import { useNavigation } from "expo-router";
 import { themeColors } from "@/theme/index.js";
+import { useLoading } from '../context/LoadingContext.js';
 
 export default function RestaurantColumn({ idCategory }) {
-  const [activeCategories, setActiveCategories] = useState(null);
+  const { showLoading, hideLoading } = useLoading();
   const {
     data: dataRestaurants = [],
     isLoading: isLoadingRestaurants,
@@ -22,11 +23,13 @@ export default function RestaurantColumn({ idCategory }) {
   const navigation = useNavigation();
 
   if (isLoadingRestaurants) {
+    showLoading('Cargando datos...')
     return (
       <ActivityIndicator size="large" color={themeColors.bgColorSecondary(1)} />
     );
   }
 
+  hideLoading()
   return (
       <View className="mt-4">
         <ScrollView

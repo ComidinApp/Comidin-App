@@ -3,9 +3,10 @@ import React, { useEffect, useState } from 'react'
 import { categories } from '../constants/inedex.js';
 import { useGetAllCommerceCategoryQuery } from "../redux/apis/commerce.js";
 import { useNavigation } from 'expo-router';
+import { useLoading } from '../context/LoadingContext.js';
 
 export default function Categories() {
-    const [activeCategories, setActiveCategories] = useState(null);
+    const { showLoading, hideLoading } = useLoading();
     const {
       data: dataCategory = [],
       isLoading: isLoadingCategory,
@@ -15,6 +16,16 @@ export default function Categories() {
 
     const navigation = useNavigation();
 
+  if(isLoadingCategory){
+    showLoading('Cargando datos...');
+    return null
+  }
+
+  if (errorCategory) {
+    return <Text>Error al cargar categorías: {errorCategory.message}</Text>;
+  }
+
+  hideLoading()
   return (
     <View className='mt-4'>
       <ScrollView 
@@ -26,10 +37,6 @@ export default function Categories() {
         }}>
             {
                 dataCategory.map((category, index) => {
-                    console.log(category);
-                    let isActive = category.id == activeCategories;
-                    let btnClass = isActive? 'bg-gray-600': 'bg-gray-200';
-                    let textClass = isActive? 'text-gray-800 font-semibold': 'text-gray-500';
                     return (
                         <View key={index} className='flex justify-center items-center mr-5 '>
                             <TouchableOpacity 
@@ -39,7 +46,7 @@ export default function Categories() {
                                       source={{uri: category.image_url}} 
                                       style={{width: 140, height: 140, borderRadius: 10}}/>
                             </TouchableOpacity>
-                            <Text className={'text-sm ' + textClass}>{category.name}</Text>
+                            <Text className={'text-sm text-gray-500'}>{category.name}</Text>
                         </View>)
                     })
             }

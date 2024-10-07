@@ -1,5 +1,5 @@
 import { createContext, useMemo } from 'react';
-import { signIn, signOut, getCurrentSession } from '../app/auth.js';
+import { signIn, signOut, getCurrentSession } from '../context/AuthContext.js';
 
 const AuthContext = createContext();
 

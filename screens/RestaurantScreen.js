@@ -55,7 +55,8 @@ export default function RestaurantScreen() {
       <StatusBar style="dark" backgroundColor="rgb(250, 243, 230)" />
       <ScrollView>
         <View className="relative">
-          <Image className="h-72 w-full" source={{uri: restaurant.image_url}} />
+          <Image className="h-72 w-full" source={{
+            uri: restaurant.image_url}} />
 
           {/* Flecha de retorno */}
           <TouchableOpacity

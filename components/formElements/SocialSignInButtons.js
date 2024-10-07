@@ -2,7 +2,7 @@ import React from 'react';
 import {View, Text} from 'react-native';
 import CustomButton from './CustomButton.js';
 import * as Icon from "react-native-feather";
-import AuthGoogle from '../../utils/auth';
+import AuthGoogle from '../../utils/authGoogle.js';
 
 const SocialSignInButtons = () => {
   const onSignInFacebook = () => {

@@ -16,5 +16,23 @@
         "Authcomidin": {}
       }
     }
+  },
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-authcomidin-dev-60462-authRole",
+      "UnauthRoleArn": "arn:aws:iam::025066283494:role/amplify-authcomidin-dev-60462-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::025066283494:role/amplify-authcomidin-dev-60462-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-authcomidin-dev-60462-deployment",
+      "UnauthRoleName": "amplify-authcomidin-dev-60462-unauthRole",
+      "StackName": "amplify-authcomidin-dev-60462",
+      "StackId": "arn:aws:cloudformation:us-east-1:025066283494:stack/amplify-authcomidin-dev-60462/72ec70b0-7ad7-11ef-8b96-0ef26697d685",
+      "AmplifyAppId": "dpf7d6ffuy9en"
+    },
+    "categories": {
+      "auth": {
+        "Authcomidin": {}
+      }
+    }
   }
 }

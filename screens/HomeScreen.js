@@ -7,11 +7,13 @@ import { themeColors } from "../theme/index.js";
 import Categories from "./../components/categories.js";
 import Promotions from "./../components/promotions.js";
 import Restaurant from "./../components/restaurants.js";
+import RestaurantsColumn from "./../components/restaurantColumn.js";
 import FeaturedRow from "./../components/featuredRow.js";
 import { useGetAllCommerceCategoryQuery } from "../redux/apis/commerce.js";
+import SafeArea from "./../components/safeArea.js";
 
 const SearchBar = () => (
-  <View className="flex-row items-center space-x-2 px-4 pb-2">
+  <View className="flex-row items-center space-x-2 px-4 py-2">
     <View className="flex-row flex-1 items-center p-3 rounded-full border border-gray-300 bg-white">
       <Icon.Search height="25" width="25" stroke="gray" />
       <TextInput placeholder="Buscar comercio" className="ml-2 flex-1" />
@@ -77,11 +79,12 @@ const CategoryRow = ({ category }) => {
 
 export default function Navigation() {
   return (
-    <SafeAreaView
+    <SafeArea textHeader={'¿Qué vas a comer hoy?'}>
+    {/* <SafeAreaView
       style={{paddingTop: 10, paddingBottom: 20}}
       className="bg-comidin-light-orange"
     >
-      <StatusBar style="dark-content" />
+      <StatusBar style="dark-content" /> */}
       <SearchBar />
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -96,6 +99,8 @@ export default function Navigation() {
         <Text className="text-xl font-bold p-4">Locales</Text>
         <Restaurant />
       </ScrollView>
-    </SafeAreaView>
+    {/* </SafeAreaView> */}
+    </SafeArea>
   );
 }
+

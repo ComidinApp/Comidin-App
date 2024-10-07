@@ -6,6 +6,7 @@ import SocialSignInButtons from '../../components/formElements/SocialSignInButto
 import {useNavigation} from '@react-navigation/core';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
+import {cognitoPool} from '../../utils/cognito-pool';
 
 export default function SignUpScreen() {
   const [username, setUsername] = useState('');
@@ -16,7 +17,28 @@ export default function SignUpScreen() {
   const navigation = useNavigation();
 
   const onRegisterPressed = () => {
-    navigation.navigate('ConfirmEmail');
+    navigation.navigate('ConfirmEmail', email);
+    cognitoPool.signUp(email, password, [], null, (err, data) => {
+      // setLoading(false);
+
+      if (err) {
+        console.log(err);
+        // switch (err.name) {
+        //   case 'InvalidParameterException':
+        //     return Alert.alert(General.Error, Auth.InvalidEmail);
+        //   case 'InvalidPasswordException':
+        //     return Alert.alert(General.Error, Auth.InvalidPassword);
+        //   case 'UsernameExistsException':
+        //     return Alert.alert(General.Error, Auth.EmailAlreadyExists);
+        //   default:
+        //     return Alert.alert(General.Error, General.SomethingWentWrong);
+        // }
+      }
+
+      // Alert.alert(General.Success, Auth.ConfirmEmail, [
+      //   {text: 'OK', onPress: () => navigation.navigate('login')},
+      // ]);
+    });
   };
 
   const onSignInPress = () => {

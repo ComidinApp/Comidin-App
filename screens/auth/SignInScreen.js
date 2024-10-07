@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   Text,
@@ -11,9 +11,10 @@ import CustomInput from "../../components/formElements/CustomInput.js";
 import CustomButton from "../../components/formElements/CustomButton.js";
 import SocialSignInButtons from "../../components/formElements/SocialSignInButtons.js";
 import { useNavigation } from "@react-navigation/native";
-import { themeColors } from "../../theme/index.js";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
+import { AuthContext } from '../../app/navigation.js';
+
 
 export default function SignInScreen() {
   const [username, setUsername] = useState("");
@@ -22,11 +23,7 @@ export default function SignInScreen() {
   const { height } = useWindowDimensions();
   const navigation = useNavigation();
 
-  const onSignInPressed = async (data) => {
-    // const response = Auth.signIn(data.username, data.password);
-    // validate user
-    navigation.navigate("Home");
-  };
+  const { signIn } = useContext(AuthContext);
 
   const onForgotPasswordPressed = () => {
     navigation.navigate("ForgotPassword");
@@ -64,7 +61,7 @@ export default function SignInScreen() {
               secureTextEntry
             />
             <View className="w-full px-10 py-5">
-              <CustomButton text="Ingresar" onPress={onSignInPressed} />
+              <CustomButton text="Ingresar" onPress={() => signIn(username, password)} />
               <CustomButton
                 text="Recuperar contraseña"
                 onPress={onForgotPasswordPressed}

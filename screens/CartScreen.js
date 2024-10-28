@@ -6,6 +6,9 @@ import { useNavigation } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
 import { selectRestaurant } from "@/slices/restaurantSlice";
 import { removeToCart, selectCart, selectCartTotal } from "@/slices/cartSlice";
+import { RadioButton } from 'react-native-paper';
+import { handleIntegrationMP } from "../utils/MPIntegration.js"
+import { openBrowserAsync } from "expo-web-browser";
 
 export default function CartScreen() {
     const restaurant = useSelector(selectRestaurant);
@@ -14,6 +17,7 @@ export default function CartScreen() {
     const cartTotal =  useSelector(selectCartTotal)
     const [groupedItems, setGroupedItems] = useState({});
     const dispatch = useDispatch();
+    const [selectedMethod, setSelectedMethod] = useState('');
 
     useEffect(() => {
         const items = cartItems.reduce((group, item) => {
@@ -26,41 +30,97 @@ export default function CartScreen() {
         }, {});
         setGroupedItems(items);
     }, [cartItems])
-  return (
-    <View className="bg-white flex-1 pt-7">
 
-        <View className="relative py-4 shadow-sm">
+
+    const PaymentMethodSelector = () => {
+        return (
+            <View>
+                <Text className="text-lg font-bold px-6 text-comidin-brown">Método de pago</Text>  
+                <View className=" m-4 p-1 bg-white rounded-lg border-2 border-comidin-brown">
+                    <View className="space-y-1">
+                        <TouchableOpacity 
+                        className="flex-row items-center bg-white p-1 rounded-md"
+                        onPress={() => setSelectedMethod('efectivo')}
+                        >
+                        <RadioButton
+                            value="efectivo"
+                            status={selectedMethod === 'efectivo' ? 'checked' : 'unchecked'}
+                            onPress={() => setSelectedMethod('efectivo')}
+                            color="#95541b"
+                        />
+                        <Text className="ml-2 text-comidin-green font-semibold">Efectivo</Text>
+                        </TouchableOpacity>
+
+                        <View className="h-px bg-comidin-brown" />
+
+                        <TouchableOpacity 
+                        className="flex-row items-center bg-white p-1 rounded-md"
+                        onPress={() => setSelectedMethod('mercadoPago')}
+                        >
+                        <RadioButton
+                            value="mercadoPago"
+                            status={selectedMethod === 'mercadoPago' ? 'checked' : 'unchecked'}
+                            onPress={() => setSelectedMethod('mercadoPago')}
+                            color="#95541b"
+                        />
+                        <Text className="ml-2 text-comidin-green font-semibold">Mercado Pago</Text>
+                        </TouchableOpacity>
+                    </View>
+                    </View>
+            </View>
+        )
+    }
+
+    const handleBuy = async () => {
+        const preferencia = {
+            "items": [
+                {
+                  "title": "Comidin",
+                  "description": restaurant.name,
+                  "picture_url": "https://comidin-assets-tjff.s3.amazonaws.com/commerce-logos/Comidin.png",
+                  "category_id": "car_electronics",
+                  "quantity": 1,
+                  "currency_id": "$",
+                  "unit_price": cartTotal
+                }
+              ]
+        }
+
+        const data = await handleIntegrationMP(preferencia)
+        if (!data) {
+            return console.log("Ha ocurrido un error")
+        }
+        openBrowserAsync(data)
+    }
+
+  return (
+    <View className="bg-comidin-orange flex-1 pt-7">
+        
+        <View className="py-4 w-full h-14">
             {/* Flecha de retorno */}
             <TouchableOpacity
                 onPress={() => navigation.goBack()}
-                style={{backgroundColor: themeColors.bgColorPrimary(1)}}
-                className="absolute z-10 rounded-full p-2 shadow top-5 left-2"
+                className="absolute z-10 p-2 shadow top-2 left-2"
             >
-                <Icon.ArrowLeft height="20" width="20" strokeWidth={3} stroke={themeColors.bgColorSecondary(1)} />
+                <Icon.ArrowLeft height="30" width="30" strokeWidth={4} stroke={themeColors.bgColorPrimary(1)} />
             </TouchableOpacity>
 
-            {/* Nombre de restaurant */}
-            <View>
-                <Text className="text-center font-bold text-xl">Carrito</Text>
-                <Text className="text-center text-gray-500">{restaurant.name}</Text>
-            </View>
         </View>
+            {/* Nombre de restaurant */}
+
 
         { /* Definir si va */}
         <View 
-            style={{backgroundColor: themeColors.bgColorSecondary(0.2)}} 
-            className="flex-row px-4 items-center"
+            className="bg-comidin-light-orange h-full"
         >
-            <Image source={require('../assets/images/delivery.png')} className="w-20 h-20 rounded-full"></Image>
-            <Text className="flex-1 pl-4">¡Preparemos el pedido!</Text>
-            <TouchableOpacity>
-                <Text className="font-bold" style={{color: themeColors.bgColorSecondary(1)}}>Editar</Text>
-            </TouchableOpacity>
-        </View>    
+            <View className="p-6">
+                <Text className="text-left font-semibold text-3xl text-comidin-brown">Mi pedido</Text>
+                <Text className="text-left text-gray-500">{restaurant.name}</Text>
+            </View>
+          
 
         {/* Lista de productos */}
         <ScrollView 
-                className="bg-white"
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{
                     paddingBottom: 50
@@ -73,8 +133,8 @@ export default function CartScreen() {
                         <View key={key} 
                         className="flex-row justify-between items-center space-x-3 px-4 py-2 bg-white rounded-3xl mx-2 my-3 shadow-xl shadow-black">
                             <Text className="font-bold" style={{color: 'black'}}>{items.length}</Text>
-                            <Image className="h-14 w-14 rounded-full" source={dish.image}/>
-                            <Text className="flex-1 font-bold text-gray-700">{dish.name}</Text>
+                            <Image className="h-14 w-14 rounded-full" source={{uri: dish.product.image_url}}/>
+                            <Text className="flex-1 font-bold text-gray-700">{dish.product.name}</Text>
                             <Text className="font-bold text-gray-700">${dish.price}</Text>
                             <TouchableOpacity 
                                 onPress={() => dispatch(removeToCart({id: dish.id}))}
@@ -88,9 +148,10 @@ export default function CartScreen() {
                     )
                 })
             }
+            <PaymentMethodSelector />
         </ScrollView>
 
-        <View className="p-6 px-8 rounded-t-3xl space-y-4" style={{backgroundColor: themeColors.bgColorPrimary(1)}}>
+        <View className="pb-20 pt-4 px-8 rounded-t-3xl space-y-4 bg-comidin-orange/50">
             <View className="flex-row justify-between ">
                 <Text className="text-gray-700 font-extrabold">Total</Text>
                 <Text className="text-gray-700 font-extrabold">${cartTotal}</Text>
@@ -100,6 +161,7 @@ export default function CartScreen() {
                     // onPress={ () => navigation.navigate('Checkout')} 
                     style={{backgroundColor: themeColors.bgColorSecondary(1)}}
                     className="p-3 rounded-full"
+                    onPress={handleBuy}
                 >
                     <Text className="text-white text-center font-bold text-lg">
                         Pagar
@@ -107,6 +169,7 @@ export default function CartScreen() {
                 </TouchableOpacity>
             </View>
         </View>
+        </View>  
 
     </View>
   )

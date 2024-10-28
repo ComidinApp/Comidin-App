@@ -9,7 +9,9 @@ import CartIcon from "../components/cartIcon.js";
 import { StatusBar } from "expo-status-bar";
 import { useDispatch } from "react-redux";
 import { setRestaurant } from "@/slices/restaurantSlice.js";
+import { emptyCart } from '@/slices/cartSlice';
 import { useGetpublicationByCommerceQuery } from "../redux/apis/publication.js";
+
 
 const RestaurantProducts = ({ RestaurantId }) => {
   const {
@@ -29,7 +31,7 @@ const RestaurantProducts = ({ RestaurantId }) => {
   }
 
   return (
-    <View className="pb-36 bg-white h-screen">
+    <View className="pb-36 bg-comidin-light-orange h-screen">
       <Text className="px-4 py-4 text-2xl font-bold">Menú</Text>
       {dataProducts.map((product, index) => (
         <DishRow item={{ ...product }} key={index} />
@@ -49,6 +51,12 @@ export default function RestaurantScreen() {
       dispatch(setRestaurant({ ...restaurant }));
     }
   });
+
+  const handleBack = () => {
+    dispatch(emptyCart());
+    navigation.goBack()
+  }
+
   return (
     <View className="bg-comidin-light-orange">
       <CartIcon />
@@ -60,7 +68,7 @@ export default function RestaurantScreen() {
 
           {/* Flecha de retorno */}
           <TouchableOpacity
-            onPress={() => navigation.goBack()}
+            onPress={handleBack}
             className="absolute top-14 left-4 bg-gray-50 p-2 rounded-full shadow"
           >
             <Icon.ArrowLeft
@@ -75,7 +83,7 @@ export default function RestaurantScreen() {
         {/* Nombre de restaurant */}
         <View
           style={{ borderTopLeftRadius: 40, borderTopRightRadius: 40 }}
-          className="bg-white -mt-12 pt-6"
+          className="bg-comidin-light-orange -mt-12 pt-6"
         >
           <View className="px-5">
             <Text className="text-3xl font-bold">{restaurant.name}</Text>
@@ -86,9 +94,8 @@ export default function RestaurantScreen() {
                   className="h-4 w-4"
                 />
                 <Text className="text-xs">
-                  <Text className="text-green-700">{restaurant.stars}</Text>
+                  <Text className="text-green-700">4.8</Text>
                   <Text className="text-gray-700">
-                    ({restaurant.reviews}) •{" "}
                     <Text className="font-semibold">
                       {restaurant.category}{" "}
                     </Text>

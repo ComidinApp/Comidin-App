@@ -37,10 +37,12 @@ export default function SignInScreen() {
     <SafeAreaView
       className='bg-comidin-dark-orange pt-3'
     >
-    <ImageBackground source={require("../../assets/images/login.jpg")} resizeMode="cover" className="h-full bg-transparent">
+    <ImageBackground 
+    source={require("../../assets/images/backgroundComidin.png")} resizeMode="cover" 
+    className="h-full bg-transparent">
     <ScrollView
       showsVerticalScrollIndicator={false}
-      className="h-full"
+      className="h-full bg-comidin-light-orange/70"
     >
 
         <StatusBar style="dark-content" />
@@ -60,7 +62,7 @@ export default function SignInScreen() {
               setValue={setPassword}
               secureTextEntry
             />
-            <View className="w-full px-10 py-5">
+            <View className="w-full py-5">
               <CustomButton text="Ingresar" onPress={() => signIn(username, password)} />
               <CustomButton
                 text="Recuperar contraseña"
@@ -76,10 +78,7 @@ export default function SignInScreen() {
                 className="py-2 flex flex-row"
               >
                 <Text className="text-black text-lg font-semibold">
-                  ¿No tienes cuenta?{" "}
-                </Text>
-                <Text className="text-comidin-dark-orange text-lg font-semibold">
-                  Regístrate
+                  ¿No tienes cuenta? Regístrate
                 </Text>
               </TouchableOpacity>
             </View>

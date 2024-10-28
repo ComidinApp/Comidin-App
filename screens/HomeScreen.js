@@ -29,7 +29,7 @@ const ButtonSignOut = () => {
 }
 
 const SearchBar = () => (
-  <View className="flex-row items-center space-x-2 px-4 py-2">
+  <View className="flex-row items-center space-x-2 p-4 py-2">
     <View className="flex-row flex-1 items-center p-3 rounded-full border border-gray-300 bg-white">
       <Icon.Search height="25" width="25" stroke="gray" />
       <TextInput placeholder="Buscar comercio" className="ml-2 flex-1" />
@@ -46,29 +46,24 @@ const SearchBar = () => (
 
 export default function Navigation() {
   return (
-    <SafeArea textHeader={'¿Qué vas a comer hoy?'}>
-    {/* <SafeAreaView
-      style={{paddingTop: 10, paddingBottom: 20}}
+    <SafeAreaView
+      style={{paddingBottom: 10}}
       className="bg-comidin-light-orange"
     >
-      <StatusBar style="dark-content" /> */}
       <SearchBar />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
-          paddingBottom: 20,
+          paddingBottom: 10,
         }}
       >
-        <Text className="text-xl font-bold p-4">José Manuel Estrada</Text>
         <Promotions />
-        <Text className="text-xl font-bold p-4">¿Qué vas a comer hoy?</Text>
         <Categories />
         <Text className="text-xl font-bold p-4">Locales</Text>
         <Restaurant />
         <ButtonSignOut />
       </ScrollView>
-    {/* </SafeAreaView> */}
-    </SafeArea>
+      </SafeAreaView>
+    // </SafeArea>
   );
 }
-

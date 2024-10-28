@@ -99,7 +99,7 @@ export default function SignUpScreen() {
           <SocialSignInButtons />
 
           <CustomButton
-            text="Have an account? Sign in"
+            text="Iniciar sesión"
             onPress={onSignInPress}
             type="TERTIARY"
           />

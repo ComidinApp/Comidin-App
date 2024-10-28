@@ -6,6 +6,9 @@ module.exports = {
       colors: {
         'comidin-dark-orange': '#D67030',
         'comidin-light-orange': '#FEFAE0 ',
+        'comidin-orange': '#DDA15E',
+        'comidin-brown': '#95541B',
+        'comidin-green': '#606C38'
       },
     },
   },

@@ -6,6 +6,7 @@ import {useNavigation} from '@react-navigation/core';
 import {cognitoPool} from '../../utils/cognito-pool';
 import {CognitoUser, AuthenticationDetails} from 'amazon-cognito-identity-js';
 import { useRoute } from '@react-navigation/native';
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ConfirmEmailScreen() {
   const { params } = useRoute();
@@ -39,31 +40,32 @@ export default function ConfirmEmailScreen() {
   };
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} className='pt-10 bg-orange-200'>
-      <View style={styles.root}>
-        <Text style={styles.title}>Confirm your email</Text>
+    <SafeAreaView
+      className='bg-comidin-dark-orange pt-3 w-full'
+    >
 
-        <CustomInput
-          placeholder="Enter your confirmation code"
-          value={code}
-          setValue={setCode}
-        />
+      <ScrollView showsVerticalScrollIndicator={false} className='h-full px-9 bg-comidin-light-orange'>
+        <View className='items-center w-full'>
+          <Text className='font-bold text-3xl text-comidin-dark-orange py-8'>Confirmar email</Text>
 
-        <CustomButton text="Confirm" onPress={onConfirmPressed} />
+          <CustomInput
+            placeholder="Ingresa tu código de confirmación"
+            value={code}
+            setValue={setCode}
+          />
 
-        <CustomButton
-          text="Resend code"
-          onPress={onResendPress}
-          type="SECONDARY"
-        />
+          <View className='mt-5 w-full'>
+            <CustomButton text="Confirmar" onPress={onConfirmPressed} />
+          </View>
 
-        <CustomButton
-          text="Back to Sign in"
-          onPress={onSignInPress}
-          type="TERTIARY"
-        />
-      </View>
-    </ScrollView>
+          <CustomButton
+            text="Reenviar código"
+            onPress={onResendPress}
+            type="SECONDARY"
+          />
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 

@@ -31,36 +31,38 @@ export default function PresentationScreen() {
   };
 
   return (
-    <SafeAreaView className="bg-comidin-light-orange">
+    <SafeAreaView className="bg-comidin-light-orange flex-1">
       <ImageBackground
         source={require("../assets/images/backgroundComidin.png")}
         resizeMode="cover"
-        imageStyle={{ opacity: 0.6 }}
+        className="flex-1"
       >
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            className="h-full px-6 bg-transparent"
-          >
-            <View style={{marginTop}}>
-              <Image resizeMode="contain" className="w-full aspect-auto" source={require("../assets/images/logoComidin.png")}></Image>
-            </View>
-
-            <View style={{ flex: 1, justifyContent: 'flex-end', marginBottom }}>
-              <CustomButton text="Ingresar" onPress={onSignInPressed} />
-              <TouchableOpacity
-                onPress={onSignUpPress}
-                className="py-2 flex flex-row"
-              >
-                <Text className="text-black text-lg font-semibold">
-                  ¿No tienes cuenta?{" "}
-                </Text>
-                <Text className="text-comidin-dark-orange text-lg font-semibold">
-                  Regístrate
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </ScrollView>
-
+        <View className="flex-1 px-6 bg-comidin-light-orange/70">
+          <View style={{marginTop}}>
+            <Image 
+              resizeMode="contain" 
+              className="w-full aspect-auto" 
+              source={require("../assets/images/logoComidin.png")}
+            />
+          </View>
+          
+          <View className="flex-1" />
+          
+          <View className="items-center mb-20">
+            <CustomButton text="Ingresar" onPress={onSignInPressed} />
+            <TouchableOpacity
+              onPress={onSignUpPress}
+              className="flex flex-row mt-2"
+            >
+              <Text className="text-black text-lg font-semibold">
+                ¿No tienes cuenta? {" "}
+              </Text>
+              <Text className="text-comidin-dark-orange text-lg font-semibold">
+                Registrate
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </ImageBackground>
     </SafeAreaView>
   );

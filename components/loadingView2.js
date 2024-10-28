@@ -1,6 +1,7 @@
-import React from 'react';
-import { View, ActivityIndicator, Text, StyleSheet } from 'react-native';
 import { useLoading } from '../context/LoadingContext.js';
+import React, { useEffect } from 'react';
+import { View, StyleSheet, Animated, Easing } from 'react-native';
+import PropTypes from 'prop-types';
 
 const LoadingOverlay = () => {
   const { isLoading, loadingText } = useLoading();
@@ -28,6 +29,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     zIndex: 1000,
+    width: '100%',
+    height: '100%',
   },
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.7)',

@@ -7,6 +7,8 @@ import { AuthProvider, useAuth } from '../context/AuthContext';
 import AppStack from './AppStack';
 import AuthStack from './AuthStack';
 
+import DrawerNavigator from '../components/drawerComponent.js';
+
 const Stack = createNativeStackNavigator();
 
 function Navigation() {

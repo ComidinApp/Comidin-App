@@ -34,7 +34,9 @@ export default function ForgotPasswordScreen() {
           setValue={setUsername}
         />
 
-        <CustomButton text="Enviar" onPress={onSendPressed} />
+        <View className='mt-5 w-full'>
+          <CustomButton text="Enviar" onPress={onSendPressed} />
+        </View>
 
         <CustomButton
           text="Volver al inicio de sesión"

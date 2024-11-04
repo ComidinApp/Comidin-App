@@ -1,7 +1,7 @@
 import { View, Text, Image, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { themeColors } from '@/theme'
-import { useNavigation } from 'expo-router';
+import { useNavigation } from '@react-navigation/core';
 import { useSelector } from 'react-redux';
 import { selectCart, selectCartTotal } from '@/slices/cartSlice';
 

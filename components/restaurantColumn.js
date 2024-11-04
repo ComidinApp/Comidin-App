@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useGetAllCommerceByCategoryIdQuery } from "../redux/apis/commerce.js";
-import { useNavigation } from "expo-router";
+import { useNavigation } from '@react-navigation/core';
 import { themeColors } from "@/theme/index.js";
 import { useLoading } from '../context/LoadingContext.js';
 

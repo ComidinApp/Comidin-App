@@ -1,8 +1,7 @@
 import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { categories } from '../constants/inedex.js';
+import React from 'react'
 import { useGetAllCommerceCategoryQuery } from "../redux/apis/commerce.js";
-import { useNavigation } from 'expo-router';
+import {useNavigation} from '@react-navigation/core';
 import { useLoading } from '../context/LoadingContext.js';
 
 export default function Categories() {

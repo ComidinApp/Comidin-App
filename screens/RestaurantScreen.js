@@ -1,6 +1,6 @@
 import { themeColors } from "@/theme";
 import { useRoute } from "@react-navigation/native";
-import { useNavigation } from "expo-router";
+import { useNavigation } from '@react-navigation/core';
 import React, { useEffect } from "react";
 import { View, Text, ScrollView, Image, TouchableOpacity, ActivityIndicator } from "react-native";
 import * as Icon from "react-native-feather";

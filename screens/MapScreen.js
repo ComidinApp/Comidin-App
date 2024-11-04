@@ -91,7 +91,7 @@ export default function Map() {
       });
 
       if (reverseGeocode.length > 0) {
-        navigation.navigate('AdressScreen', { location: reverseGeocode[0] });
+        navigation.navigate('Address', { location: reverseGeocode[0] });
       }
     }
   };

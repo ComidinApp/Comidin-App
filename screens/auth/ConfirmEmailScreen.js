@@ -7,25 +7,41 @@ import {cognitoPool} from '../../utils/cognito-pool';
 import {CognitoUser, AuthenticationDetails} from 'amazon-cognito-identity-js';
 import { useRoute } from '@react-navigation/native';
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useGetUserDataQuery } from '../../redux/apis/user';
 
 export default function ConfirmEmailScreen() {
   const { params } = useRoute();
-  let email = params;
+  const { email, password } = params;
   const [code, setCode] = useState('');
-
+  const [error, setError] = useState('');
   const navigation = useNavigation();
+  const { data: userData, error: userError } = useGetUserDataQuery();
+
+  const handleCodeChange = (text) => {
+    setCode(text);
+    setError('');
+  };
 
   const onConfirmPressed = () => {
+    if (!code) {
+      setError('El código es requerido');
+      return;
+    }
+
     const user = new CognitoUser({
       Username: email,
       Pool: cognitoPool,
     });
 
-    user.confirmRegistration(code, true, (err, data) => {
+    user.confirmRegistration(code, true, async (err, data) => {
       if(data){
-        navigation.navigate('SignIn');
+        navigation.navigate('PersonalData', {
+          email,
+          password
+        });
       }
       if(err){
+        setError('El código ingresado no es válido');
         console.log(err);
       }
     })
@@ -51,7 +67,8 @@ export default function ConfirmEmailScreen() {
           <CustomInput
             placeholder="Ingresa tu código de confirmación"
             value={code}
-            setValue={setCode}
+            setValue={handleCodeChange}
+            error={error}
           />
 
           <View className='mt-5 w-full'>

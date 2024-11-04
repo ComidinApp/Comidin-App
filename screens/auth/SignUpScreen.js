@@ -9,35 +9,76 @@ import { StatusBar } from "expo-status-bar";
 import {cognitoPool} from '../../utils/cognito-pool';
 
 export default function SignUpScreen() {
-  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordRepeat, setPasswordRepeat] = useState('');
 
+  const [errors, setErrors] = useState({
+    email: '',
+    password: '',
+    passwordRepeat: ''
+  });
+
   const navigation = useNavigation();
 
-  const onRegisterPressed = () => {
-    navigation.navigate('ConfirmEmail', email);
-    cognitoPool.signUp(email, password, [], null, (err, data) => {
-      // setLoading(false);
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email) return 'El email es requerido';
+    if (!emailRegex.test(email)) return 'El email no es válido';
+    return '';
+  };
 
+  const validatePassword = (password) => {
+    if (!password) return 'La contraseña es requerida';
+    if (password.length < 8) return 'La contraseña debe tener al menos 8 caracteres';
+    if (!/[A-Z]/.test(password)) return 'La contraseña debe tener al menos una mayúscula';
+    if (!/[a-z]/.test(password)) return 'La contraseña debe tener al menos una minúscula';
+    if (!/[0-9]/.test(password)) return 'La contraseña debe tener al menos un número';
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) return 'La contraseña debe tener al menos un carácter especial';
+    return '';
+  };
+
+  const validateForm = () => {
+    const newErrors = {
+      email: validateEmail(email),
+      password: validatePassword(password),
+      passwordRepeat: password !== passwordRepeat ? 'Las contraseñas no coinciden' : ''
+    };
+
+    setErrors(newErrors);
+    return !Object.values(newErrors).some(error => error !== '');
+  };
+
+  const onRegisterPressed = () => {
+    if (!validateForm()) return;
+
+    cognitoPool.signUp(email, password, [], null, (err, data) => {
       if (err) {
-        console.log(err);
-        // switch (err.name) {
-        //   case 'InvalidParameterException':
-        //     return Alert.alert(General.Error, Auth.InvalidEmail);
-        //   case 'InvalidPasswordException':
-        //     return Alert.alert(General.Error, Auth.InvalidPassword);
-        //   case 'UsernameExistsException':
-        //     return Alert.alert(General.Error, Auth.EmailAlreadyExists);
-        //   default:
-        //     return Alert.alert(General.Error, General.SomethingWentWrong);
-        // }
+        switch (err.code) {
+          case 'UsernameExistsException':
+            setErrors(prev => ({...prev, email: 'Este email ya está registrado'}));
+            break;
+          case 'InvalidPasswordException':
+            setErrors(prev => ({...prev, password: 'La contraseña no cumple con los requisitos de seguridad'}));
+            break;
+          case 'InvalidParameterException':
+            if (err.message.includes('email')) {
+              setErrors(prev => ({...prev, email: 'El formato del email no es válido'}));
+            } else {
+              setErrors(prev => ({...prev, password: 'La contraseña no cumple con los requisitos'}));
+            }
+            break;
+          default:
+            console.log(err);
+            setErrors(prev => ({...prev, email: 'Ha ocurrido un error. Por favor, intenta nuevamente'}));
+        }
+        return;
       }
 
-      // Alert.alert(General.Success, Auth.ConfirmEmail, [
-      //   {text: 'OK', onPress: () => navigation.navigate('login')},
-      // ]);
+      navigation.navigate('ConfirmEmail', {
+        email,
+        password
+      });
     });
   };
 
@@ -54,6 +95,21 @@ export default function SignUpScreen() {
     console.warn('onPrivacyPressed');
   };
 
+  const handleEmailChange = (text) => {
+    setEmail(text);
+    setErrors(prev => ({...prev, email: ''}));
+  };
+
+  const handlePasswordChange = (text) => {
+    setPassword(text);
+    setErrors(prev => ({...prev, password: ''}));
+  };
+
+  const handlePasswordRepeatChange = (text) => {
+    setPasswordRepeat(text);
+    setErrors(prev => ({...prev, passwordRepeat: ''}));
+  };
+
   return (
     <SafeAreaView
       className='bg-comidin-dark-orange pt-3'
@@ -63,23 +119,26 @@ export default function SignUpScreen() {
       <View className="items-center w-full">
         <Text className="font-bold text-3xl text-comidin-dark-orange py-8">Crear cuenta</Text>
 
-        <CustomInput
-          placeholder="Usuario"
-          value={username}
-          setValue={setUsername}
+        <CustomInput 
+          placeholder="Email" 
+          value={email} 
+          setValue={handleEmailChange}
+          keyboardType="email-address"
+          error={errors.email}
         />
-        <CustomInput placeholder="Email" value={email} setValue={setEmail} />
         <CustomInput
           placeholder="Contraseña"
           value={password}
-          setValue={setPassword}
+          setValue={handlePasswordChange}
           secureTextEntry
+          error={errors.password}
         />
         <CustomInput
           placeholder="Repetir contraseña"
           value={passwordRepeat}
-          setValue={setPasswordRepeat}
+          setValue={handlePasswordRepeatChange}
           secureTextEntry
+          error={errors.passwordRepeat}
         />
 
         <CustomButton text="Registrar" onPress={onRegisterPressed} />

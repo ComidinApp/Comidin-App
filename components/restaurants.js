@@ -9,7 +9,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { categories } from "../constants/inedex.js";
 import { useGetCommercesQuery } from "../redux/apis/commerce.js";
-import { useNavigation } from 'expo-router';
+import { useNavigation } from '@react-navigation/core';
 import { themeColors } from "@/theme/index.js";
 
 export default function Restaurants() {

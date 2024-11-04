@@ -2,7 +2,7 @@ import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from "react";
 import { themeColors } from "@/theme";
 import * as Icon from "react-native-feather";
-import { useNavigation } from "expo-router";
+import { useNavigation } from '@react-navigation/core';
 import { useDispatch, useSelector } from "react-redux";
 import { selectRestaurant } from "@/slices/restaurantSlice";
 import { removeToCart, selectCart, selectCartTotal } from "@/slices/cartSlice";

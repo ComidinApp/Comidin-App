@@ -1,17 +1,18 @@
 import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-import { AuthProvider, useAuth } from '../context/AuthContext';
-import AppStack from './AppStack';
+import { useAuth } from '../context/AuthContext';
 import AuthStack from './AuthStack';
-
-import DrawerNavigator from '../components/drawerComponent.js';
+import AppStack from './AppStack';
+import LocationStack from './LocationStack';
+import { useGetUserDataQuery } from '../redux/apis/user';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createNativeStackNavigator();
 
 function Navigation() {
+  const { data: userData } = useGetUserDataQuery();
+
   const { state, dispatch } = useAuth();
 
   useEffect(() => {
@@ -29,22 +30,20 @@ function Navigation() {
   }, [dispatch]);
 
   return (
-    <NavigationContainer independent={true}>
+    <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {state.userToken == null ? (
           <Stack.Screen name="Auth" component={AuthStack} />
         ) : (
-          <Stack.Screen name="App" component={AppStack} />
+          <>
+            {console.log(userData)}
+            <Stack.Screen name="Location" component={LocationStack} />
+            <Stack.Screen name="App" component={AppStack} />
+          </>
         )}
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
 
-export default function App() {
-  return (
-    <AuthProvider>
-      <Navigation />
-    </AuthProvider>
-  );
-}
+export default Navigation;

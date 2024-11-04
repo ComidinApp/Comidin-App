@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 const CustomDrawerContent = ({ navigation }) => {
   const menuItems = [
-    { name: 'Home', title: 'Inicio' },
+    { name: 'HomeScreen', title: 'Inicio' },
     { name: 'Profile', title: 'Perfil' },
     { name: 'Settings', title: 'Configuración' },
   ];

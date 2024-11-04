@@ -44,7 +44,7 @@ const SearchBar = () => (
   </View>
 );
 
-export default function Navigation() {
+export default function HomeScreen() {
   return (
     <SafeAreaView
       style={{paddingBottom: 10}}

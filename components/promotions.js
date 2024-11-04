@@ -1,14 +1,10 @@
 import {
   View,
   Text,
-  ScrollView,
   TouchableOpacity,
-  Image,
   ImageBackground,
 } from "react-native";
-import React, { useEffect, useState } from "react";
-import { categories } from "../constants/inedex.js";
-import { useGetAllCommerceCategoryQuery } from "../redux/apis/commerce.js";
+import React from "react";
 
 export default function Promotions() {
   return (

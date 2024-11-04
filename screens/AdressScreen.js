@@ -51,8 +51,8 @@ const AdressScreen = ({ route, navigation }) => {
       };
 
     //   await postAddress(addressData).unwrap();
-      navigation.navigate('DrawerScreens', { 
-        screen: 'Main',
+      navigation.navigate('App', { 
+        screen: 'Home',
         params: { confirmedAddress: address }
       });
     } catch (error) {

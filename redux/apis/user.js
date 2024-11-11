@@ -29,6 +29,13 @@ export const userApi = createApi({
     getUserByEmail: builder.query({
       query: (email) => `/user/email/${email}`,
     }),
+    updateUserData: builder.mutation({
+      query: ({ userId, userData }) => ({
+        url: `/user/${userId}`,
+        method: 'PUT',
+        body: userData,
+      }),
+    }),
   }),
 });
 
@@ -36,4 +43,5 @@ export const {
   usePostUserDataMutation,
   useGetUserDataQuery,
   useGetUserByEmailQuery,
+  useUpdateUserDataMutation,
 } = userApi; 

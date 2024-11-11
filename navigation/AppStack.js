@@ -12,6 +12,9 @@ import CommercesCategory from '../screens/CommercesCategoryScreen';
 import PaymentScreen from '../screens/PaymentScreen';
 import DirectionsScreen from '../screens/DirectionsScreen';
 import OrderSuccessScreen from '../screens/OrderSuccessScreen';
+import UserProfileScreen from '../screens/profile/UserProfileScreen';
+import { TouchableOpacity } from 'react-native';
+import * as Icon from "react-native-feather";
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -36,6 +39,7 @@ function MainStack() {
           headerShown: false
         }}
       />
+      <Stack.Screen name="UserProfile" component={UserProfileScreen} />
     </Stack.Navigator>
   );
 }
@@ -56,14 +60,29 @@ function DrawerScreens() {
         drawerStyle: {
           width: '75%',
         },
+        swipeEnabled: true,
+        swipeEdgeWidth: 100,
+        gestureEnabled: true,
+        overlayColor: 'rgba(0,0,0,0.5)',
+        drawerType: 'front',
       }}
+      initialRouteName="Main"
+      useLegacyImplementation={false}
     >
       <Drawer.Screen 
         name="Main" 
         component={MainStack}
-        options={{
+        options={({ navigation }) => ({
           title: '¿Qué vas a comer hoy?',
-        }} 
+          headerLeft: () => (
+            <TouchableOpacity 
+              className="pl-4"
+              onPress={() => navigation.openDrawer()}
+            >
+              <Icon.Menu stroke="white" width={24} height={24} />
+            </TouchableOpacity>
+          ),
+        })} 
       />
     </Drawer.Navigator>
   );

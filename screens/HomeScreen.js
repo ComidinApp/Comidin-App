@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { View, Text, TextInput, ScrollView, ActivityIndicator } from "react-native";
+import { View, Text, TextInput, ScrollView, ActivityIndicator, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import * as Icon from "react-native-feather";
@@ -13,6 +13,7 @@ import { useGetAllCommerceCategoryQuery } from "../redux/apis/commerce.js";
 import SafeArea from "./../components/safeArea.js";
 import { useAuth  } from '../context/AuthContext.js';
 import CustomButton from "../components/formElements/CustomButton.js";
+import { useSelector } from 'react-redux';
 
 const ButtonSignOut = () => {
   const { signOut } = useAuth();
@@ -45,11 +46,22 @@ const SearchBar = () => (
 );
 
 export default function HomeScreen() {
+  const userData = useSelector(state => state.user.userData);
+  const firstName = userData?.first_name || 'Usuario';
+
   return (
     <SafeAreaView
       style={{paddingBottom: 10}}
       className="bg-comidin-light-orange"
     >
+      <View className="bg-comidin-dark-orange pt-3 pb-3">
+        <View className="flex-row items-center justify-start   px-4">
+          <Text className="text-white text-xl font-bold">
+            Hola, {firstName}!
+          </Text>
+        </View>
+      </View>
+
       <SearchBar />
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -63,7 +75,6 @@ export default function HomeScreen() {
         <Restaurant />
         <ButtonSignOut />
       </ScrollView>
-      </SafeAreaView>
-    // </SafeArea>
+    </SafeAreaView>
   );
 }

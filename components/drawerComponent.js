@@ -2,6 +2,7 @@
 import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { HomeScreen } from '../screens/HomeScreen';
+import UserProfileScreen from '../screens/profile/UserProfileScreen';
 import CustomDrawerContent from './customDrawerContent';
 
 const Drawer = createDrawerNavigator();
@@ -19,14 +20,14 @@ const DrawerNavigator = () => {
           title: 'Inicio'
         }}
       />
-      {/* <Drawer.Screen 
-        name="Profile" 
-        component={ProfileScreen}
+      <Drawer.Screen 
+        name="UserProfile" 
+        component={UserProfileScreen}
         options={{
           title: 'Perfil'
         }}
       />
-      <Drawer.Screen 
+      {/* <Drawer.Screen 
         name="Settings" 
         component={SettingsScreen}
         options={{

@@ -10,6 +10,7 @@ import RestaurantScreen from '../screens/RestaurantScreen';
 import CartScreen from '../screens/CartScreen';
 import CommercesCategory from '../screens/CommercesCategoryScreen';
 import PaymentScreen from '../screens/PaymentScreen';
+import DirectionsScreen from '../screens/DirectionsScreen';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -26,6 +27,13 @@ function MainStack() {
       />
       <Stack.Screen name="CommercesCategory" component={CommercesCategory} />
       <Stack.Screen name="Payment" component={PaymentScreen} />
+      <Stack.Screen 
+        name="Directions" 
+        component={DirectionsScreen}
+        options={{
+            headerShown: false
+        }}
+      />
     </Stack.Navigator>
   );
 }

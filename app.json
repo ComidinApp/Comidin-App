@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "entryPoint": "./App.js",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "comidin",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
@@ -21,7 +21,18 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.comidin.android"
+      "package": "com.comidin.android",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "comidin"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "bundler": "metro",

@@ -8,6 +8,7 @@ import { userApi } from './apis/user';
 import { cartMiddleware } from './middleware/cartMiddleware';
 import userSlice from './slices/userSlice';
 import addressReducer from './slices/addressSlice';
+import { orderApi } from './apis/order';
 
 const customMiddleware = (store) => (next) => (action) => {
   if (action.type === 'address/setCurrentAddress') {
@@ -26,6 +27,7 @@ export const store = configureStore({
     [userApi.reducerPath]: userApi.reducer,
     user: userSlice,
     address: addressReducer,
+    [orderApi.reducerPath]: orderApi.reducer,
   },
 
   middleware: (getDefaultMiddleware) =>  
@@ -35,5 +37,6 @@ export const store = configureStore({
       concat(addressApi.middleware).
       concat(userApi.middleware).
       concat(cartMiddleware).
-      concat(customMiddleware),
+      concat(customMiddleware).
+      concat(orderApi.middleware),
 })

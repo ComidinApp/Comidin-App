@@ -1,48 +1,48 @@
 import React, { useEffect } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAuth } from '../context/AuthContext';
 import AuthStack from './AuthStack';
 import AppStack from './AppStack';
 import LocationStack from './LocationStack';
-import { useGetUserDataQuery } from '../redux/apis/user';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch } from 'react-redux';
+import { setCurrentAddress } from '../redux/slices/addressSlice';
 
 const Stack = createNativeStackNavigator();
 
 function Navigation() {
-  const { data: userData } = useGetUserDataQuery();
-
   const { state, dispatch } = useAuth();
+  const reduxDispatch = useDispatch();
 
   useEffect(() => {
     const bootstrapAsync = async () => {
-      let userToken;
       try {
-        userToken = await AsyncStorage.getItem('userToken');
+        const [userToken, userAddress] = await Promise.all([
+          AsyncStorage.getItem('userToken'),
+          AsyncStorage.getItem('userAddress'),
+        ]);
+
+        if (userAddress) {
+          reduxDispatch(setCurrentAddress(JSON.parse(userAddress)));
+        }
+
+        dispatch({ type: 'RESTORE_TOKEN', token: userToken });
       } catch (e) {
-        // Error al restaurar el token
+        console.error('Error restoring data:', e);
       }
-      dispatch({ type: 'RESTORE_TOKEN', token: userToken });
     };
 
     bootstrapAsync();
-  }, [dispatch]);
+  }, [dispatch, reduxDispatch]);
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {state.userToken == null ? (
-          <Stack.Screen name="Auth" component={AuthStack} />
-        ) : (
-          <>
-            {console.log(userData)}
-            <Stack.Screen name="Location" component={LocationStack} />
-            <Stack.Screen name="App" component={AppStack} />
-          </>
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      {state.userToken == null ? (
+        <Stack.Screen name="Auth" component={AuthStack} />
+      ) : (
+        <Stack.Screen name="App" component={AppStack} />
+      )}
+    </Stack.Navigator>
   );
 }
 

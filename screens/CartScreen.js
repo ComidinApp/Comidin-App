@@ -4,8 +4,14 @@ import { themeColors } from "@/theme";
 import * as Icon from "react-native-feather";
 import { useNavigation } from '@react-navigation/core';
 import { useDispatch, useSelector } from "react-redux";
-import { selectRestaurant } from "@/slices/restaurantSlice";
-import { removeToCart, selectCart, selectCartTotal } from "@/slices/cartSlice";
+import { selectRestaurant } from "../redux/slices/restaurantSlice";
+import { 
+    addToCart,
+    removeFromCart as removeToCart,
+    selectCartItems,
+    selectCartItemsCount,
+    selectCartTotal
+} from "../redux/slices/cartSlice";
 import { RadioButton } from 'react-native-paper';
 import { handleIntegrationMP } from "../utils/MPIntegration.js"
 import { openBrowserAsync } from "expo-web-browser";
@@ -13,24 +19,22 @@ import { openBrowserAsync } from "expo-web-browser";
 export default function CartScreen() {
     const restaurant = useSelector(selectRestaurant);
     const navigation = useNavigation();
-    const cartItems =  useSelector(selectCart)
-    const cartTotal =  useSelector(selectCartTotal)
+    const cartItems = useSelector(selectCartItems);
+    const cartTotal = useSelector(selectCartTotal);
     const [groupedItems, setGroupedItems] = useState({});
     const dispatch = useDispatch();
     const [selectedMethod, setSelectedMethod] = useState('');
 
     useEffect(() => {
         const items = cartItems.reduce((group, item) => {
-            if(group[item.id]){
-                group[item.id].push(item);
-            }else {
-                group[item.id] = [item];
+            const key = `${item.id}-${JSON.stringify(item.selectedExtras)}`;
+            if (!group[key]) {
+                group[key] = item;
             }
             return group;
         }, {});
         setGroupedItems(items);
-    }, [cartItems])
-
+    }, [cartItems]);
 
     const PaymentMethodSelector = () => {
         return (
@@ -127,23 +131,35 @@ export default function CartScreen() {
                 }} 
         >
             {
-                Object.entries(groupedItems).map(([key, items]) => {
-                    let dish = items[0];
+                Object.entries(groupedItems).map(([key, item]) => {
+                    const isMinQuantity = item.quantity <= 1;
                     return (
                         <View key={key} 
                         className="flex-row justify-between items-center space-x-3 px-4 py-2 bg-white rounded-3xl mx-2 my-3 shadow-xl shadow-black">
-                            <Text className="font-bold" style={{color: 'black'}}>{items.length}</Text>
-                            <Image className="h-14 w-14 rounded-full" source={{uri: dish.product.image_url}}/>
-                            <Text className="flex-1 font-bold text-gray-700">{dish.product.name}</Text>
-                            <Text className="font-bold text-gray-700">${dish.price}</Text>
-                            <TouchableOpacity 
-                                onPress={() => dispatch(removeToCart({id: dish.id}))}
-                                className="p-1 rounded-full"
-                                style={{backgroundColor: themeColors.bgColorSecondary(0.2)}}
-                            >
-                                <Icon.Minus strokeWidth={2} stroke="white" height={20} width={20} />
-                            </TouchableOpacity>
-
+                            <Text className="font-bold" style={{color: 'black'}}>{item.quantity}</Text>
+                            <Image className="h-14 w-14 rounded-full" source={{uri: item.product.image_url}}/>
+                            <Text className="flex-1 font-bold text-gray-700">{item.product.name}</Text>
+                            <Text className="font-bold text-gray-700">${item.price}</Text>
+                            <View className="flex-row items-center space-x-2">
+                                <TouchableOpacity 
+                                    onPress={() => !isMinQuantity && dispatch(removeToCart({
+                                        id: item.id,
+                                        selectedExtras: item.selectedExtras || {}
+                                    }))}
+                                    className={`p-1 rounded-full ${isMinQuantity ? 'opacity-30' : ''}`}
+                                    disabled={isMinQuantity}
+                                    style={{backgroundColor: themeColors.bgColorSecondary(0.2)}}
+                                >
+                                    <Icon.Minus strokeWidth={2} stroke="white" height={20} width={20} />
+                                </TouchableOpacity>
+                                <TouchableOpacity 
+                                    onPress={() => dispatch(addToCart(item))}
+                                    className="p-1 rounded-full"
+                                    style={{backgroundColor: themeColors.bgColorSecondary(0.2)}}
+                                >
+                                    <Icon.Plus strokeWidth={2} stroke="white" height={20} width={20} />
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     )
                 })

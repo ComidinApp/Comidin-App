@@ -141,8 +141,9 @@ export default function SignUpScreen() {
           error={errors.passwordRepeat}
         />
 
-        <CustomButton text="Registrar" onPress={onRegisterPressed} />
-
+        <View className="w-full py-5">
+          <CustomButton text="Registrar" onPress={onRegisterPressed} />
+        </View>
         {/* <Text style={styles.text}>
           By registering, you confirm that you accept our{' '}
           <Text style={styles.link} onPress={onTermsOfUsePressed}>
@@ -155,12 +156,11 @@ export default function SignUpScreen() {
         </Text> */}
 
         <View className="flex items-center mt-12 w-full">
-          <SocialSignInButtons />
 
           <CustomButton
             text="Iniciar sesión"
             onPress={onSignInPress}
-            type="TERTIARY"
+            type="SECONDARY"
           />
         
         </View> 

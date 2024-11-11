@@ -5,14 +5,56 @@ import CustomButton from '../../components/formElements/CustomButton.js';
 import {useNavigation} from '@react-navigation/core';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
+import { useAuth } from '../../context/AuthContext';
 
 export default function ForgotPasswordScreen() {
   const [username, setUsername] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({
+    email: ''
+  });
+  const { forgotPassword, errorMessage } = useAuth();
 
   const navigation = useNavigation();
 
-  const onSendPressed = () => {
-    navigation.navigate('NewPassword');
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email) return 'El email es requerido';
+    if (!emailRegex.test(email)) return 'El email no es válido';
+    return '';
+  };
+
+  const validateForm = () => {
+    const emailError = validateEmail(username);
+    setErrors({ email: emailError });
+    return !emailError;
+  };
+
+  const onSendPressed = async () => {
+    if (loading) return;
+    if (!validateForm()) return;
+    
+    try {
+      setLoading(true);
+      await forgotPassword(username);
+      navigation.navigate('NewPassword', { username });
+    } catch (error) {
+      if (error.code === 'UserNotFoundException') {
+        setErrors({ email: 'Ha ocurrido un error. Por favor, intenta nuevamente' });
+      } else if (error.code === 'LimitExceededException') {
+        setErrors({ email: 'Demasiados intentos. Por favor, intenta más tarde' });
+      } else {
+        setErrors({ email: 'Ha ocurrido un error. Por favor, intenta nuevamente' });
+      }
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEmailChange = (text) => {
+    setUsername(text);
+    setErrors({ email: '' });
   };
 
   const onSignInPress = () => {
@@ -29,13 +71,23 @@ export default function ForgotPasswordScreen() {
         <Text className="font-bold text-3xl text-comidin-dark-orange py-8"> Recuperar contraseña</Text>
 
         <CustomInput
-          placeholder="Usuario"
+          placeholder="Correo electrónico"
           value={username}
-          setValue={setUsername}
+          setValue={handleEmailChange}
+          keyboardType="email-address"
+          error={errors.email}
         />
 
+        {errorMessage && (
+          <Text className="text-red-500 mt-2">{errorMessage}</Text>
+        )}
+
         <View className='mt-5 w-full'>
-          <CustomButton text="Enviar" onPress={onSendPressed} />
+          <CustomButton 
+            text={loading ? "Enviando..." : "Enviar"} 
+            onPress={onSendPressed}
+            disabled={loading}
+          />
         </View>
 
         <CustomButton

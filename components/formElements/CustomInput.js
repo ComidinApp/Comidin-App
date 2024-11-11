@@ -4,10 +4,10 @@ import { View, Text, TextInput } from "react-native";
 const CustomInput = ({ 
   value, 
   setValue, 
-  placeholder, 
+  placeholder="", 
   secureTextEntry, 
   capitalize="none",
-  error,
+  error = '',
   keyboardType
 }) => {
   return (

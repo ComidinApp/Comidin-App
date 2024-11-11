@@ -6,12 +6,16 @@ import {useNavigation, useRoute} from '@react-navigation/core';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { usePostUserDataMutation } from '../../redux/apis/user';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { useDispatch } from 'react-redux';
+import { useAuth } from '../../context/AuthContext';
 
 export default function PersonalDataScreen() {
   const navigation = useNavigation();
   const route = useRoute();
   const { email, password } = route.params || {};
   const [postUserData] = usePostUserDataMutation();
+  const dispatch = useDispatch();
+  const { signIn } = useAuth();
 
   const [userData, setUserData] = useState({
     first_name: '',
@@ -69,7 +73,8 @@ export default function PersonalDataScreen() {
     const newErrors = {
       first_name: !userData.first_name ? 'El nombre es requerido' : '',
       last_name: !userData.last_name ? 'El apellido es requerido' : '',
-      phone_number: !userData.phone_number ? 'El teléfono es requerido' : '',
+      phone_number: !userData.phone_number ? 'El teléfono es requerido' : 
+                   userData.phone_number.length < 8 ? 'El teléfono debe tener al menos 8 dígitos' : '',
       national_id: !userData.national_id ? 'El documento es requerido' : '',
       birthday: !userData.birthday ? 'La fecha de nacimiento es requerida' : 
                 !validateAge(userData.birthday) ? 'Debes ser mayor de 18 años' : ''
@@ -90,17 +95,35 @@ export default function PersonalDataScreen() {
         password
       };
 
-      console.log("START: ", userDataToSend)
-      await postUserData(userDataToSend).unwrap();
+      console.log(userDataToSend);
+      const userResponse = await postUserData(userDataToSend).unwrap();
+      console.log(userResponse);
+      
+      if(userResponse){
+        await signIn(email, password);
+      }
+
     } catch (error) {
-      console.error('Error al guardar los datos:', error);
+      console.error('Error al guardar los datos:', JSON.stringify(error));
     }
   };
 
   const handleInputChange = (field, value) => {
+    if (field === 'phone_number') {
+      value = value.replace(/[^0-9]/g, '');
+    }
+    
     setUserData(prev => ({...prev, [field]: value}));
-    // Limpiar error del campo específico
-    setErrors(prev => ({...prev, [field]: ''}));
+    
+    if (field === 'phone_number') {
+      if (value.length < 8 && value.length > 0) {
+        setErrors(prev => ({...prev, phone_number: 'El teléfono debe tener al menos 8 dígitos'}));
+      } else {
+        setErrors(prev => ({...prev, phone_number: ''}));
+      }
+    } else {
+      setErrors(prev => ({...prev, [field]: ''}));
+    }
   };
 
   return (

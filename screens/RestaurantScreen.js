@@ -1,15 +1,15 @@
 import { themeColors } from "@/theme";
 import { useRoute } from "@react-navigation/native";
-import { useNavigation } from '@react-navigation/core';
-import React, { useEffect } from "react";
+import { useNavigation, useFocusEffect } from '@react-navigation/core';
+import React, { useEffect, useMemo } from "react";
 import { View, Text, ScrollView, Image, TouchableOpacity, ActivityIndicator } from "react-native";
 import * as Icon from "react-native-feather";
 import DishRow from "../components/dishRow.js";
 import CartIcon from "../components/cartIcon.js";
 import { StatusBar } from "expo-status-bar";
-import { useDispatch } from "react-redux";
-import { setRestaurant } from "@/slices/restaurantSlice.js";
-import { emptyCart } from '@/slices/cartSlice';
+import { useDispatch, useSelector } from "react-redux";
+import { setRestaurant, selectRestaurant } from "../redux/slices/restaurantSlice.js";
+import { clearCart } from '../redux/slices/cartSlice';
 import { useGetpublicationByCommerceQuery } from "../redux/apis/publication.js";
 
 
@@ -46,22 +46,38 @@ export default function RestaurantScreen() {
   const navigation = useNavigation();
 
   const dispatch = useDispatch();
+  const currentRestaurant = useSelector(selectRestaurant);
+
+  // Memorizar valores que se usan en useEffect
+  const memoizedRestaurant = useMemo(() => restaurant, [restaurant]);
+
   useEffect(() => {
-    if (restaurant && restaurant.id) {
-      dispatch(setRestaurant({ ...restaurant }));
-    }
-  });
+    dispatch(setRestaurant(memoizedRestaurant));
+  }, [dispatch, memoizedRestaurant]);
+
+  useEffect(() => {
+    dispatch(clearCart());
+  }, [currentRestaurant?.id]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // Vaciar el carrito cuando la pantalla recibe el foco
+      dispatch(clearCart());
+    }, [])
+  );
 
   const handleBack = () => {
-    dispatch(emptyCart());
     navigation.goBack()
   }
 
   return (
-    <View className="bg-comidin-light-orange">
+    <View className="flex-1 bg-white">
       <CartIcon />
       <StatusBar style="dark" backgroundColor="rgb(250, 243, 230)" />
-      <ScrollView>
+      <ScrollView
+        className="flex-1 pt-4 pb-36"
+        showsVerticalScrollIndicator={false}
+      >
         <View className="relative">
           <Image className="h-72 w-full" source={{
             uri: restaurant.image_url}} />
@@ -112,7 +128,9 @@ export default function RestaurantScreen() {
             <Text className="text-gray-500 mt-2">{restaurant.description}</Text>
           </View>
         </View>
-        <RestaurantProducts RestaurantId={restaurant.id} />
+        <View className="pb-36">
+          <RestaurantProducts RestaurantId={restaurant.id} />
+        </View>
       </ScrollView>
     </View>
   );

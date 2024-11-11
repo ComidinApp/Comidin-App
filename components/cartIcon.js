@@ -1,33 +1,33 @@
-import { View, Text, Image, TouchableOpacity } from 'react-native'
-import React from 'react'
-import { themeColors } from '@/theme'
-import { useNavigation } from '@react-navigation/core';
+import React from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { useSelector } from 'react-redux';
-import { selectCart, selectCartTotal } from '@/slices/cartSlice';
+import { useNavigation } from '@react-navigation/native';
+import { ShoppingCartIcon } from 'react-native-heroicons/outline';
+import { selectCartItems, selectCartItemsCount } from '../redux/slices/cartSlice';
 
-export default function CartIcon() {
-  const navigation = useNavigation();  
-  const cartItems = useSelector(selectCart);
-  const cartTotal = useSelector(selectCartTotal)
-  if(!cartItems || cartItems.length === 0){
-    return null;
-  }
+const CartIcon = () => {
+  const navigation = useNavigation();
+  const itemCount = useSelector(selectCartItemsCount);
+  
+  if (itemCount === 0) return null;
+
   return (
-    <View className="absolute bottom-5 w-full z-20">
+    <View className="absolute bottom-10 w-full z-50">
       <TouchableOpacity
         onPress={() => navigation.navigate('Cart')}
-        style={{backgroundColor: themeColors.bgColorSecondary(1)}}
-        className='flex-row justify-between items-center mx-5 rounded-full p-4 py-3 shadow-lg'
+        className="mx-5 bg-comidin-dark-orange p-4 rounded-lg flex-row items-center space-x-1"
       >
-            <View className='p-2 px-4 rounded-full' style={{backgroundColor: themeColors.bgColorPrimary(0.4)}}>
-                <Text className='font-extrabold text-white text-lg'>
-                    {cartItems.length}
-                </Text>
-            </View>
-            <Text className='flex-1 text-white text-center font-extrabold text-lg'>Ver carrito</Text>
-            <Text className='text-white font-extrabold text-lg'>${cartTotal}</Text>
+        <Text className="text-comidin-dark-orange bg-comidin-light-orange font-extrabold text-lg  py-1 px-2 rounded">
+          {itemCount}
+        </Text>
+        <Text className="flex-1 text-white font-extrabold text-lg text-center">
+          Ver Carrito
+        </Text>
+        <ShoppingCartIcon size={28} color="white" />
       </TouchableOpacity>
     </View>
-  )
-}
+  );
+};
+
+export default CartIcon;
 

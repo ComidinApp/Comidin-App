@@ -1,28 +1,24 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { store } from './redux/store';
-import Navigation from './navigation/navigation';
-import { AuthProvider } from './context/AuthContext';
 import { LoadingProvider } from './context/LoadingContext';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import LoadingOverlay from './components/loadingView';
-import { registerRootComponent } from 'expo';
+import { AuthProvider } from './context/AuthContext';
+import { NotificationProvider } from './context/NotificationContext';
+import Navigation from './navigation/navigation';
+import { NavigationContainer } from '@react-navigation/native';
 
-function App() {
+export default function App() {
   return (
     <Provider store={store}>
       <LoadingProvider>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <AuthProvider>
-            <Navigation />
-          </AuthProvider>
-        </GestureHandlerRootView>
-        <LoadingOverlay />
+        <NotificationProvider>
+          <NavigationContainer>
+            <AuthProvider>
+              <Navigation />
+            </AuthProvider>
+          </NavigationContainer>
+        </NotificationProvider>
       </LoadingProvider>
     </Provider>
   );
-}
-
-registerRootComponent(App);
-
-export default App; 
+} 

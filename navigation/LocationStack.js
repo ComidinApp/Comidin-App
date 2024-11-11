@@ -2,7 +2,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MapScreen from '../screens/MapScreen';
-import AdressScreen from '../screens/AdressScreen';
+import AddressScreen from '../screens/AddressScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -11,8 +11,20 @@ function LocationStack() {
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Map" component={MapScreen} />
-        <Stack.Screen name="Address" component={AdressScreen} />
+        <Stack.Screen 
+          name="Map" 
+          component={MapScreen}
+          options={{
+            gestureEnabled: false,
+          }} 
+        />
+        <Stack.Screen 
+          name="Address" 
+          component={AddressScreen}
+          options={{
+            gestureEnabled: false,
+          }} 
+        />
     </Stack.Navigator>
   );
 }

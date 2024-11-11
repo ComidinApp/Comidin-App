@@ -1,3 +1,3 @@
 export const Config = {
-    API_URL: 'https://k7t4s4f6-3000.brs.devtunnels.ms',
+    API_URL: 'https://6pg61wv2-3000.brs.devtunnels.ms',
 }

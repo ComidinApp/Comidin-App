@@ -26,10 +26,14 @@ export const userApi = createApi({
     getUserData: builder.query({
       query: (userId) => `/user/${userId}`,
     }),
+    getUserByEmail: builder.query({
+      query: (email) => `/user/email/${email}`,
+    }),
   }),
 });
 
 export const {
   usePostUserDataMutation,
   useGetUserDataQuery,
+  useGetUserByEmailQuery,
 } = userApi; 

@@ -91,7 +91,8 @@ export default function Map() {
       });
 
       if (reverseGeocode.length > 0) {
-        navigation.navigate('Address', { location: reverseGeocode[0] });
+        const informationLocation = {...reverseGeocode[0], latitude: `${draggableMarkerCoords.latitude}`, longitude: `${draggableMarkerCoords.longitude}`}
+        navigation.navigate('Address', { location: informationLocation });
       }
     }
   };

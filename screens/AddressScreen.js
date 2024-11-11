@@ -2,15 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { View, Text } from 'react-native';
 import CustomInput from '../components/formElements/CustomInput';
 import CustomButton from '../components/formElements/CustomButton';
-import { usePostAdressMutation } from '../redux/apis/adress';
-import { useSelector } from 'react-redux';
+import { usePostAddressMutation } from '../redux/apis/address';
+import { useSelector, useDispatch } from 'react-redux';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScrollView } from 'react-native';
+import { useAuth } from '../context/AuthContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { setCurrentAddress } from '../redux/slices/addressSlice';
 
-const AdressScreen = ({ route, navigation }) => {
+const AddressScreen = ({ route, navigation }) => {
   const { location } = route.params;
-  const [postAddress] = usePostAdressMutation();
-//   const userId = useSelector(state => state.auth.user.id); // Asumiendo que tienes el ID del usuario en el estado de auth
+  const [postAddress] = usePostAddressMutation();
+  const userData = useSelector(state => state.user.userData);
+  const { signOut } = useAuth();
+  const dispatch = useDispatch();
   
   const [address, setAddress] = useState({
     street: '',
@@ -40,7 +45,7 @@ const AdressScreen = ({ route, navigation }) => {
   const handleConfirm = async () => {
     try {
       const addressData = {
-        user_id: 1,
+        user_id: userData.id,
         street_name: address.street,
         number: address.number,
         postal_code: address.zipCode,
@@ -50,10 +55,19 @@ const AdressScreen = ({ route, navigation }) => {
         coordinates: address.coordinates,
       };
 
-    //   await postAddress(addressData).unwrap();
-      navigation.navigate('App', { 
-        screen: 'Home',
-        params: { confirmedAddress: address }
+      const savedAddress = await postAddress(addressData).unwrap();
+      
+      dispatch(setCurrentAddress(savedAddress));
+      
+      await AsyncStorage.setItem('userAddress', JSON.stringify(savedAddress));
+
+      navigation.reset({
+        index: 0,
+        routes: [
+          {
+            name: 'App',
+          },
+        ],
       });
     } catch (error) {
       console.error('Error al guardar la dirección:', error);
@@ -122,11 +136,16 @@ const AdressScreen = ({ route, navigation }) => {
             capitalize="words"
           />
 
-          <View className="mt-6 w-full mb-6">
+          <View className="mt-6 w-full mb-6 gap-4">
             <CustomButton 
               text="Confirmar Dirección"
               onPress={handleConfirm}
               type="PRIMARY"
+            />
+            <CustomButton 
+              text="Cancelar y cerrar sesión"
+              onPress={signOut}
+              type="SECONDARY"
             />
           </View>
         </View>
@@ -135,4 +154,4 @@ const AdressScreen = ({ route, navigation }) => {
   );
 };
 
-export default AdressScreen;
+export default AddressScreen;

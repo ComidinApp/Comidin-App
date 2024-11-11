@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, Text, StyleSheet, ScrollView} from 'react-native';
 import CustomInput from '../../components/formElements/CustomInput.js';
 import CustomButton from '../../components/formElements/CustomButton.js';
@@ -16,6 +16,21 @@ export default function ConfirmEmailScreen() {
   const [error, setError] = useState('');
   const navigation = useNavigation();
   const { data: userData, error: userError } = useGetUserDataQuery();
+  const [isResending, setIsResending] = useState(false);
+  const [timer, setTimer] = useState(0);
+  const resendDelay = 30; // Tiempo en segundos para esperar entre reenvíos
+
+  useEffect(() => {
+    let interval = null;
+    if (timer > 0) {
+      interval = setInterval(() => {
+        setTimer(prev => prev - 1);
+      }, 1000);
+    } else if (timer === 0) {
+      setIsResending(false);
+    }
+    return () => clearInterval(interval);
+  }, [timer]);
 
   const handleCodeChange = (text) => {
     setCode(text);
@@ -52,7 +67,20 @@ export default function ConfirmEmailScreen() {
   };
 
   const onResendPress = () => {
-    console.warn('onResendPress');
+    if (timer > 0) return; // No permitir reenvío si el temporizador está activo
+
+    setIsResending(true);
+    setTimer(resendDelay); // Iniciar el temporizador
+
+    // Lógica para reenviar el código de confirmación
+    cognitoPool.getCurrentUser().getAttributeVerificationCode('email', {
+      onSuccess: () => {
+        console.log('Código de verificación enviado nuevamente.');
+      },
+      onFailure: (err) => {
+        console.error('Error al enviar el código de verificación:', err);
+      },
+    });
   };
 
   return (
@@ -76,9 +104,10 @@ export default function ConfirmEmailScreen() {
           </View>
 
           <CustomButton
-            text="Reenviar código"
+            text={timer > 0 ? `Reenviar código (${timer}s)` : "Reenviar código"}
             onPress={onResendPress}
             type="SECONDARY"
+            disabled={timer > 0} // Deshabilitar el botón si el temporizador está activo
           />
         </View>
       </ScrollView>

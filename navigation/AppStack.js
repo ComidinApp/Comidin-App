@@ -1,5 +1,5 @@
 // src/navigation/AppStack.js
-import React, { useEffect } from 'react';
+import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useSelector } from 'react-redux';
 import LocationStack from './LocationStack';
@@ -11,6 +11,7 @@ import CartScreen from '../screens/CartScreen';
 import CommercesCategory from '../screens/CommercesCategoryScreen';
 import PaymentScreen from '../screens/PaymentScreen';
 import DirectionsScreen from '../screens/DirectionsScreen';
+import OrderSuccessScreen from '../screens/OrderSuccessScreen';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -27,11 +28,12 @@ function MainStack() {
       />
       <Stack.Screen name="CommercesCategory" component={CommercesCategory} />
       <Stack.Screen name="Payment" component={PaymentScreen} />
+      <Stack.Screen name="OrderSuccess" component={OrderSuccessScreen} />
       <Stack.Screen 
         name="Directions" 
         component={DirectionsScreen}
         options={{
-            headerShown: false
+          headerShown: false
         }}
       />
     </Stack.Navigator>
@@ -69,10 +71,6 @@ function DrawerScreens() {
 
 export default function AppStack() {
   const currentAddress = useSelector((state) => state.address?.currentAddress);
-  
-  useEffect(() => {
-    console.log('Current Address State:', currentAddress);
-  }, [currentAddress]);
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>

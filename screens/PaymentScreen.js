@@ -1,5 +1,5 @@
-import { View, Text, TouchableOpacity, Image, ScrollView } from "react-native";
-import React, { useState } from "react";
+import { View, Text, TouchableOpacity, Image, ScrollView, Alert } from "react-native";
+import React, { useState, useEffect } from "react";
 import { useNavigation } from '@react-navigation/core';
 import { useSelector } from "react-redux";
 import { selectRestaurant } from "../redux/slices/restaurantSlice";
@@ -13,6 +13,7 @@ import { useCreateOrderMutation } from '../redux/apis/order';
 import { useDispatch } from 'react-redux';
 import { selectCurrentAddress } from '../redux/slices/addressSlice';
 import { clearCart } from '../redux/slices/cartSlice';
+import * as Linking from 'expo-linking';
 
 export default function PaymentScreen() {
     const navigation = useNavigation();
@@ -25,52 +26,51 @@ export default function PaymentScreen() {
     const [selectedMethod, setSelectedMethod] = useState('');
     const [createOrder] = useCreateOrderMutation();
 
+    useEffect(() => {
+        // Configurar el listener para las URLs
+        const handleDeepLink = async (event) => {
+            let data = Linking.parse(event.url);
+            
+            if (data.path === 'success') {
+                // Crear orden con estado pagado
+                await handleCreateOrder('mercadopago', 'paid');
+            } else if (data.path === 'failure') {
+                // Manejar fallo de pago
+                Alert.alert('Error', 'El pago no pudo ser procesado');
+            } else if (data.path === 'pending') {
+                // Manejar pago pendiente
+                await handleCreateOrder('mercadopago', 'pending');
+            }
+        };
+
+        // Agregar el listener
+        const subscription = Linking.addEventListener('url', handleDeepLink);
+
+        // Verificar si la app fue abierta con una URL
+        const getInitialURL = async () => {
+            const initialUrl = await Linking.getInitialURL();
+            if (initialUrl) {
+                handleDeepLink({ url: initialUrl });
+            }
+        };
+
+        getInitialURL();
+
+        // Limpiar el listener
+        return () => {
+            subscription.remove();
+        };
+    }, []);
+
     const handleCreateOrder = async (paymentMethod, paymentStatus = 'pending') => {
         try {
-            const orderData = {
-                user_id: userData.id,
-                commerce_id: restaurant.id,
-                total_amount: cartTotal,
-                status: paymentStatus,
-                delivery_type: "Home Delivery",
-                created_at: new Date().toISOString(),
-                // commerce: {
-                //     id: restaurant.id,
-                //     name: restaurant.name,
-                //     address: {
-                //         street_name: restaurant.street_name,
-                //         number: restaurant.number,
-                //         city: restaurant.city
-                //     }
-                // },
-                // user: {
-                //     id: userData.id,
-                //     name: userData.name,
-                //     email: userData.email,
-                //     address: userAddress
-                // },
-                // items: cartItems.map(item => ({
-                //     product: {
-                //         id: item.product.id,
-                //         name: item.product.name,
-                //         price: item.price
-                //     },
-                //     quantity: item.quantity,
-                //     extras: item.selectedExtras || []
-                // })),
-                // payment: {
-                //     method: paymentMethod,
-                //     status: paymentStatus,
-                //     total: cartTotal
-                // }
-            };
-
-            const response = await createOrder(orderData).unwrap();
+            // Simulamos una respuesta exitosa
+            const mockOrderId = Math.floor(Math.random() * 1000000);
             dispatch(clearCart());
-            navigation.navigate('OrderSuccess', { orderId: response.id });
+            navigation.navigate('OrderSuccess', { orderId: mockOrderId });
         } catch (error) {
             console.error('Error creating order:', error);
-            // Manejar el error apropiadamente
+            Alert.alert('Error', 'No se pudo crear el pedido');
         }
     };
 
@@ -89,18 +89,25 @@ export default function PaymentScreen() {
                     "unit_price": cartTotal
                 }],
                 "back_urls": {
-                    "success": `exp://192.168.1.16:8081/--/success?method=mercadopago`,
-                    "failure": "exp://192.168.1.16:8081/--/failure",
-                    "pending": "exp://192.168.1.16:8081/--/pending"
+                    "success": "exp://192.168.1.16:8081/success",
+                    "failure": "exp://192.168.1.16:8081/failure",
+                    "pending": "exp://192.168.1.16:8081/pending"
                 },
                 "auto_return": "approved"
             };
 
+            // Para pruebas, simulamos un pago exitoso
+            await handleCreateOrder('mercadopago', 'paid');
+            
+            // Comentamos temporalmente la integración con MP
+            /*
             const data = await handleIntegrationMP(preferencia);
             if (!data) {
-                return console.log("Ha ocurrido un error");
+                Alert.alert('Error', 'No se pudo iniciar el pago');
+                return;
             }
-            openBrowserAsync(data);
+            await openBrowserAsync(data);
+            */
         }
     };
 

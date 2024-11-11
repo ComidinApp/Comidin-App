@@ -9,6 +9,7 @@ import HomeScreen from '../screens/HomeScreen';
 import RestaurantScreen from '../screens/RestaurantScreen';
 import CartScreen from '../screens/CartScreen';
 import CommercesCategory from '../screens/CommercesCategoryScreen';
+import PaymentScreen from '../screens/PaymentScreen';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -24,6 +25,7 @@ function MainStack() {
         options={{presentation: 'modal'}} 
       />
       <Stack.Screen name="CommercesCategory" component={CommercesCategory} />
+      <Stack.Screen name="Payment" component={PaymentScreen} />
     </Stack.Navigator>
   );
 }

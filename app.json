@@ -31,7 +31,18 @@
           "data": [
             {
               "scheme": "comidin",
-              "host": "*"
+              "host": "payment",
+              "pathPrefix": "/success"
+            },
+            {
+              "scheme": "comidin",
+              "host": "payment",
+              "pathPrefix": "/failure"
+            },
+            {
+              "scheme": "comidin",
+              "host": "payment",
+              "pathPrefix": "/pending"
             }
           ],
           "category": ["BROWSABLE", "DEFAULT"]

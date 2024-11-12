@@ -29,36 +29,27 @@ export default function PaymentScreen() {
     const { expoPushToken } = useNotification(); // Obtener expoPushToken
 
     useEffect(() => {
-        // Configurar el listener para las URLs
         const handleDeepLink = async (event) => {
             let data = Linking.parse(event.url);
+            const status = data.path?.split('/')[1]; // Obtiene 'success', 'failure' o 'pending'
             
-            if (data.path === 'success') {
-                // Crear orden con estado pagado
-                await handleCreateOrder('mercadopago', 'paid');
-            } else if (data.path === 'failure') {
-                // Manejar fallo de pago
+            if (status === 'success') {
+                const orderId = await handleCreateOrder('mercadopago', 'paid');
+                if (orderId) {
+                    navigation.navigate('OrderSuccess', { orderId });
+                }
+            } else if (status === 'failure') {
                 Alert.alert('Error', 'El pago no pudo ser procesado');
-            } else if (data.path === 'pending') {
-                // Manejar pago pendiente
-                await handleCreateOrder('mercadopago', 'pending');
+            } else if (status === 'pending') {
+                const orderId = await handleCreateOrder('mercadopago', 'pending');
+                if (orderId) {
+                    navigation.navigate('OrderSuccess', { orderId });
+                }
             }
         };
 
-        // Agregar el listener
         const subscription = Linking.addEventListener('url', handleDeepLink);
 
-        // Verificar si la app fue abierta con una URL
-        const getInitialURL = async () => {
-            const initialUrl = await Linking.getInitialURL();
-            if (initialUrl) {
-                handleDeepLink({ url: initialUrl });
-            }
-        };
-
-        getInitialURL();
-
-        // Limpiar el listener
         return () => {
             subscription.remove();
         };
@@ -88,47 +79,69 @@ export default function PaymentScreen() {
             
             if (response) {
                 dispatch(clearCart());
-                navigation.navigate('OrderSuccess', { orderId: response.id });
-            } else {
-                throw new Error('No se recibió respuesta del servidor');
+                return response.id; // Retornar el ID de la orden
             }
+            throw new Error('No se recibió respuesta del servidor');
         } catch (error) {
             console.error('Error creating order:', error);
             Alert.alert('Error', 'No se pudo crear el pedido');
+            return null;
         }
     };
 
     const handleBuy = async () => {
         if (selectedMethod === 'efectivo') {
-            await handleCreateOrder('cash', 'pending');
-        } else if (selectedMethod === 'mercadoPago') {
-            const preferencia = {
-                "items": [{
-                    "title": "Comidin",
-                    "description": restaurant.name,
-                    "picture_url": "https://comidin-assets-tjff.s3.amazonaws.com/commerce-logos/Comidin.png",
-                    "category_id": "car_electronics",
-                    "quantity": 1,
-                    "currency_id": "$",
-                    "unit_price": cartTotal
-                }],
-                "back_urls": {
-                    "success": "exp://192.168.1.16:8081/success",
-                    "failure": "exp://192.168.1.16:8081/failure",
-                    "pending": "exp://192.168.1.16:8081/pending"
-                },
-                "auto_return": "approved"
-            };
-
-            await handleCreateOrder('mercadopago', 'paid');
-            
-            const data = await handleIntegrationMP(preferencia);
-            if (!data) {
-                Alert.alert('Error', 'No se pudo iniciar el pago');
-                return;
+            const orderId = await handleCreateOrder('cash', 'pending');
+            if (orderId) {
+                navigation.navigate('OrderSuccess', { orderId });
             }
-            await openBrowserAsync(data);
-            
+        } else if (selectedMethod === 'mercadoPago') {
+            try {
+                // Primero creamos la orden
+                const orderId = await handleCreateOrder('mercadopago', 'pending');
+                
+                if (!orderId) {
+                    Alert.alert('Error', 'No se pudo crear el pedido');
+                    return;
+                }
+
+                // Luego creamos la preferencia de MP
+                const preferencia = {
+                    "items": [{
+                        "title": "Comidin",
+                        "description": restaurant.name,
+                        "picture_url": "https://comidin-assets-tjff.s3.amazonaws.com/commerce-logos/Comidin.png",
+                        "category_id": "car_electronics",
+                        "quantity": 1,
+                        "currency_id": "$",
+                        "unit_price": cartTotal
+                    }],
+                    "back_urls": {
+                        "success": "comidin://payment/success",
+                        "failure": "comidin://payment/failure",
+                        "pending": "comidin://payment/pending"
+                    },
+                    "external_reference": orderId.toString(), // Agregamos el ID de la orden como referencia
+                    "auto_return": "all",
+                    "binary_mode": true
+                };
+                
+                const mpUrl = await handleIntegrationMP(preferencia);
+                if (!mpUrl) {
+                    Alert.alert('Error', 'No se pudo iniciar el pago');
+                    return;
+                }
+
+                // Abrimos Mercado Pago
+                await openBrowserAsync(mpUrl);
+                
+                // Navegamos a la pantalla de éxito
+                navigation.navigate('OrderSuccess', { orderId });
+
+            } catch (error) {
+                console.error('Error en el proceso de pago:', error);
+                Alert.alert('Error', 'No se pudo completar el proceso de pago');
+            }
         }
     };
 

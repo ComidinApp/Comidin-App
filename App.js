@@ -9,7 +9,7 @@ import Navigation from './navigation/navigation';
 import * as Linking from 'expo-linking';
 
 const linking = {
-  prefixes: ['exp://192.168.1.16:8081', 'comidin://'],
+  prefixes: ['comidin://', 'exp://'],
   config: {
     screens: {
       App: {
@@ -18,11 +18,13 @@ const linking = {
             screens: {
               Main: {
                 screens: {
-                  Payment: 'payment',
+                  Payment: {
+                    path: 'payment/:status',
+                    parse: {
+                      status: (status) => status,
+                    },
+                  },
                   OrderSuccess: 'order-success',
-                  success: 'success',
-                  failure: 'failure',
-                  pending: 'pending'
                 }
               }
             }

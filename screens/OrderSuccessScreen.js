@@ -3,13 +3,39 @@ import { View, Text, TouchableOpacity, Image, ImageBackground } from 'react-nati
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import { clearCart } from '../redux/slices/cartSlice';
-import { useOrderStatus } from '../hooks/useOrderStatus';
+import { useGetOrderStatusQuery } from '../redux/apis/order';
 
 export default function OrderSuccessScreen({ route }) {
     const navigation = useNavigation();
     const dispatch = useDispatch();
     const { orderId } = route.params;
-    const { orderStatus, message } = useOrderStatus(orderId);
+    
+    // Función auxiliar para obtener el mensaje según el estado
+    const getStatusMessage = (status) => {
+        switch (status) {
+            case 'pending':
+                return 'Tu pedido ha sido realizado con éxito. Te avisaremos cuando el local lo confirme.';
+            case 'confirmed':
+                return 'Tu pedido ha sido realizado con éxito. Pronto te avisaremos cuando puedas retirarlo.';
+            case 'ready':
+                return 'Tu pedido está listo para ser retirado. Dirígete al local para recogerlo.';
+            case 'completed':
+                return 'Pedido entregado';
+            case 'cancelled':
+                return 'Pedido cancelado';
+            case 'refunded':
+                return 'Pedido reembolsado';
+            default:
+                return 'Procesando...';
+        }
+    };
+
+    const { data: orderData, refetch } = useGetOrderStatusQuery(orderId, {
+        pollingInterval: 5000,
+    });
+
+    const orderStatus = orderData?.status || 'pending';
+    const message = getStatusMessage(orderStatus);
 
     const handleBackToHome = () => {
         dispatch(clearCart());
@@ -21,13 +47,16 @@ export default function OrderSuccessScreen({ route }) {
 
     const getStatusColor = () => {
         switch (orderStatus) {
+            case 'pending':
+                return 'text-yellow-600';
             case 'confirmed':
-                return 'text-blue-600';
+                return 'text-orange-600';
             case 'ready':
                 return 'text-green-600';
             case 'completed':
                 return 'text-gray-600';
             case 'cancelled':
+            case 'refunded':
                 return 'text-red-600';
             default:
                 return 'text-comidin-orange';
@@ -67,7 +96,7 @@ export default function OrderSuccessScreen({ route }) {
                         className="bg-comidin-dark-orange p-4 rounded-full"
                     >
                         <Text className="text-white font-bold text-center">
-                            {orderStatus === 'ready' ? 'Ir a retirar' : 'Volver'}
+                            {orderStatus === 'ready' ? 'Ir a retirar' : 'Salir'}
                         </Text>
                     </TouchableOpacity>
                 </View>

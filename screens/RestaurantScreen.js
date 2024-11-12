@@ -31,7 +31,7 @@ const RestaurantProducts = ({ RestaurantId }) => {
   }
 
   return (
-    <View className="pb-36 bg-comidin-light-orange h-screen">
+    <View className="bg-comidin-light-orange">
       <Text className="px-4 py-4 text-2xl font-bold">Menú</Text>
       {dataProducts.map((product, index) => (
         <DishRow item={{ ...product }} key={index} />
@@ -71,18 +71,19 @@ export default function RestaurantScreen() {
   }
 
   return (
-    <View className="flex-1 bg-white">
+    <View className="flex-1 bg-comidin-light-orange">
       <CartIcon />
       <StatusBar style="dark" backgroundColor="rgb(250, 243, 230)" />
       <ScrollView
-        className="flex-1 pt-4 pb-36"
+        className="flex-1"
         showsVerticalScrollIndicator={false}
       >
         <View className="relative">
-          <Image className="h-72 w-full" source={{
-            uri: restaurant.image_url}} />
+          <Image 
+            className="h-72 w-full" 
+            source={{ uri: restaurant.image_url }} 
+          />
 
-          {/* Flecha de retorno */}
           <TouchableOpacity
             onPress={handleBack}
             className="absolute top-14 left-4 bg-gray-50 p-2 rounded-full shadow"
@@ -96,7 +97,6 @@ export default function RestaurantScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Nombre de restaurant */}
         <View
           style={{ borderTopLeftRadius: 40, borderTopRightRadius: 40 }}
           className="bg-comidin-light-orange -mt-12 pt-6"
@@ -128,9 +128,10 @@ export default function RestaurantScreen() {
             <Text className="text-gray-500 mt-2">{restaurant.description}</Text>
           </View>
         </View>
-        <View className="pb-36">
-          <RestaurantProducts RestaurantId={restaurant.id} />
-        </View>
+
+        <RestaurantProducts RestaurantId={restaurant.id} />
+        
+        <View className="h-24" />
       </ScrollView>
     </View>
   );

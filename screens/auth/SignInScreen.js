@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -12,6 +12,10 @@ import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { useAuth } from '../../context/AuthContext.js';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearUserData } from '../../redux/slices/userSlice';
+import { clearAddress, selectCurrentAddress } from '../../redux/slices/addressSlice';
 
 export default function SignInScreen() {
   const [username, setUsername] = useState("");
@@ -23,6 +27,41 @@ export default function SignInScreen() {
 
   const navigation = useNavigation();
   const { signIn, errorMessage } = useAuth();
+  const dispatch = useDispatch();
+  const currentAddress = useSelector(selectCurrentAddress);
+
+  // Limpiar datos al montar el componente
+  useEffect(() => {
+    const clearAllData = async () => {
+      try {
+        console.log('Clearing all data...');
+        
+        // Limpiar AsyncStorage
+        const keysToRemove = [
+          'userToken',
+          'userAddress',
+          'userData',
+          '@user_data'
+        ];
+        
+        await AsyncStorage.multiRemove(keysToRemove);
+        console.log('AsyncStorage cleared');
+
+        // Limpiar Redux
+        dispatch(clearAddress());
+        dispatch(clearUserData());
+        
+        // Verificar que se haya limpiado
+        const remainingAddress = await AsyncStorage.getItem('userAddress');
+        console.log('Remaining address:', remainingAddress);
+        console.log('Current Redux address:', currentAddress);
+      } catch (error) {
+        console.error('Error clearing data:', error);
+      }
+    };
+
+    clearAllData();
+  }, []);
 
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -54,9 +93,25 @@ export default function SignInScreen() {
     navigation.navigate("SignUp");
   };
 
-  const onSignInPress = () => {
-    if (!validateForm()) return; // Validar antes de iniciar sesión
-    signIn(username, password);
+  const onSignInPress = async () => {
+    if (!validateForm()) return;
+    
+    try {
+      // Limpiar datos antes de iniciar sesión
+      await AsyncStorage.multiRemove([
+        'userToken',
+        'userAddress',
+        'userData',
+        '@user_data'
+      ]);
+      dispatch(clearAddress());
+      dispatch(clearUserData());
+      
+      // Intentar iniciar sesión
+      await signIn(username, password);
+    } catch (error) {
+      console.error('Error during sign in:', error);
+    }
   };
 
   // Funciones para manejar el cambio de texto y limpiar errores

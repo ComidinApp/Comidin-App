@@ -4,7 +4,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from 'react-redux';
 import { useGetUserOrdersQuery } from '../../redux/apis/order';
 import * as Icon from "react-native-feather";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
 
 // Función para formatear la fecha
 const formatDate = (dateString) => {
@@ -53,7 +54,14 @@ const OrderCard = ({ order, onPress }) => (
 export default function OrdersScreen() {
   const navigation = useNavigation();
   const userData = useSelector(state => state.user.userData);
-  const { data: orders, isLoading, error } = useGetUserOrdersQuery(userData?.id);
+  const { data: orders, isLoading, error, refetch } = useGetUserOrdersQuery(userData?.id);
+
+  // Refrescar pedidos cuando la pantalla obtiene el foco
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
 
   const handleOrderPress = (order) => {
     navigation.navigate('OrderDetail', { order });

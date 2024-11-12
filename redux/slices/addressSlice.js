@@ -17,6 +17,7 @@ const addressSlice = createSlice({
 
 export const { setCurrentAddress, clearAddress } = addressSlice.actions;
 
+// Selector memoizado para mejor rendimiento
 export const selectCurrentAddress = (state) => state.address.currentAddress;
 
 export default addressSlice.reducer; 

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useMemo, useState } from 'react';
+import React, { createContext, useContext, useReducer, useMemo, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CognitoUser, AuthenticationDetails } from 'amazon-cognito-identity-js';
 import { cognitoPool } from '../utils/cognito-pool.js';
@@ -21,12 +21,93 @@ export function AuthProvider({ children }) {
   const [errorMessage, setErrorMessage] = useState(null);
   const reduxDispatch = useDispatch();
   const navigation = useNavigation();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Función para cargar los datos del usuario desde el almacenamiento
+  const loadUserData = async () => {
+    try {
+      const userData = await AsyncStorage.getItem('@user_data');
+      if (userData) {
+        setUser(JSON.parse(userData));
+      }
+    } catch (error) {
+      console.error('Error loading user data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Función para guardar los datos del usuario
+  const saveUserData = async (userData) => {
+    try {
+      await AsyncStorage.setItem('@user_data', JSON.stringify(userData));
+      setUser(userData);
+    } catch (error) {
+      console.error('Error saving user data:', error);
+    }
+  };
+
+  const login = async (credentials) => {
+    try {
+      const response = await loginUser(credentials);
+      await saveUserData(response.user);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await AsyncStorage.removeItem('@user_data');
+      setUser(null);
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+  };
+
+  // Cargar datos del usuario al iniciar la app
+  useEffect(() => {
+    loadUserData();
+  }, []);
+
+  // Función para limpiar todos los datos
+  const clearAllData = async () => {
+    try {
+      console.log('Clearing all data...');
+      
+      // Limpiar AsyncStorage
+      await AsyncStorage.multiRemove([
+        'userToken',
+        'userAddress',
+        'userData',
+        '@user_data'
+      ]);
+
+      // Limpiar Redux y caché
+      reduxDispatch(clearUserData());
+      reduxDispatch(clearAddress());
+      reduxDispatch(addressApi.util.resetApiState());
+      
+      // Verificar limpieza
+      const remainingAddress = await AsyncStorage.getItem('userAddress');
+      console.log('Remaining address after clear:', remainingAddress);
+      
+      dispatch({ type: 'SIGN_OUT' });
+    } catch (error) {
+      console.error('Error clearing data:', error);
+    }
+  };
 
   const authContext = useMemo(
     () => ({
       signIn: async (username, password) => {
         try {
+          // Asegurarse de que los datos se limpien antes de iniciar sesión
+          await clearAllData();
           showLoading('Iniciando sesión...');
+          
           const user = new CognitoUser({
             Username: username,
             Pool: cognitoPool,
@@ -38,53 +119,64 @@ export function AuthProvider({ children }) {
           });
       
           user.authenticateUser(authDetails, {
-            onSuccess: async res => {
+            onSuccess: async (session) => {
               try {
                 console.log('Login successful, getting user data...');
                 showLoading('Obteniendo datos del usuario...');
-                const token = res?.refreshToken?.token;
-                await AsyncStorage.setItem('userToken', token);
-                dispatch({ type: 'SIGN_IN', token: token });
-                
+
+                const accessToken = session.getAccessToken().getJwtToken();
+                await AsyncStorage.setItem('userToken', accessToken);
+                dispatch({ type: 'SIGN_IN', token: accessToken });
+
                 const userResult = await reduxDispatch(
                   userApi.endpoints.getUserByEmail.initiate(username)
                 ).unwrap();
-                if (userResult) {
-                  try {
-                    console.log('User Result:', userResult);
-                    reduxDispatch(setUserData(userResult));
-                    
-                    showLoading('Verificando dirección...');
-                    
-                    // Usar endpoints.getAddressByUserId.initiate correctamente
-                    const result = await reduxDispatch(
-                      addressApi.endpoints.getAddressByUserId.initiate(userResult.id)
-                    );
-                    
-                    console.log('API Response:', result);
 
-                    if (result.data && result.data.length > 0) {
-                      console.log('Setting address:', result.data[0]);
-                      reduxDispatch(setCurrentAddress(result.data[0]));
-                      await AsyncStorage.setItem('userAddress', JSON.stringify(result.data[0]));
-                      hideLoading();
+                if (userResult) {
+                  console.log('User data received:', userResult);
+                  reduxDispatch(setUserData(userResult));
+                  
+                  showLoading('Verificando dirección...');
+                  
+                  try {
+                    // Limpiar caché antes de hacer la petición
+                    reduxDispatch(addressApi.util.resetApiState());
+                    
+                    // Hacer la petición con skip de caché
+                    const addressResponse = await reduxDispatch(
+                      addressApi.endpoints.getAddressByUserId.initiate(userResult.id, {
+                        forceRefetch: true,
+                        subscribe: false
+                      })
+                    ).unwrap();
+                    
+                    console.log('Fresh Address API Response:', addressResponse);
+
+                    if (addressResponse && 
+                        Array.isArray(addressResponse) && 
+                        addressResponse.length > 0 && 
+                        addressResponse[0].id) {
+                      
+                      console.log('Valid address found:', addressResponse[0]);
+                      reduxDispatch(setCurrentAddress(addressResponse[0]));
+                      await AsyncStorage.setItem('userAddress', JSON.stringify(addressResponse[0]));
                     } else {
-                      console.log('No addresses found');
-                      reduxDispatch(setCurrentAddress(null));
+                      console.log('No valid address found, ensuring address is cleared');
+                      reduxDispatch(clearAddress());
                       await AsyncStorage.removeItem('userAddress');
-                      hideLoading();
+                      reduxDispatch(addressApi.util.resetApiState());
                     }
+                    hideLoading();
+                    
                   } catch (error) {
                     console.error('Error fetching address:', error);
+                    reduxDispatch(clearAddress());
+                    await AsyncStorage.removeItem('userAddress');
+                    reduxDispatch(addressApi.util.resetApiState());
+                    hideLoading();
+                    setErrorMessage('Error al obtener la dirección del usuario.');
                   }
-                  
-                  hideLoading();
-                  navigation.reset({
-                    index: 0,
-                    routes: [{ name: 'App' }],
-                  });
                 }
-                setErrorMessage(null);
               } catch (error) {
                 console.error('Error fetching data:', error);
                 setErrorMessage('Error al obtener los datos del usuario.');
@@ -106,20 +198,7 @@ export function AuthProvider({ children }) {
       signOut: async () => {
         try {
           showLoading('Cerrando sesión...');
-          // Limpiar AsyncStorage
-          await AsyncStorage.multiRemove([
-            'userToken',
-            'userAddress',
-            'userData'
-          ]);
-
-          // Limpiar estados de Redux
-          reduxDispatch(clearAddress());
-          reduxDispatch(clearUserData());
-
-          // Limpiar estado de autenticación
-          dispatch({ type: 'SIGN_OUT' });
-          
+          await clearAllData();
           hideLoading();
         } catch (error) {
           console.error('Error al cerrar sesión:', error);

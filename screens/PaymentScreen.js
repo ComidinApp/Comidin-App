@@ -72,7 +72,7 @@ export default function PaymentScreen() {
                 created_at: new Date(),
                 total_amount: cartTotal.toString(),
                 status: paymentStatus,
-                delivery_type: 'Retiro en local', // Since this is pickup only
+                delivery_type: 'pickup', // Since this is pickup only
                 payment_method: paymentMethod,
                 items_quantity: cartItems.length,
                 details: cartItems.map(item => ({
@@ -120,18 +120,15 @@ export default function PaymentScreen() {
                 "auto_return": "approved"
             };
 
-            // Para pruebas, simulamos un pago exitoso
             await handleCreateOrder('mercadopago', 'paid');
             
-            // Comentamos temporalmente la integración con MP
-            /*
             const data = await handleIntegrationMP(preferencia);
             if (!data) {
                 Alert.alert('Error', 'No se pudo iniciar el pago');
                 return;
             }
             await openBrowserAsync(data);
-            */
+            
         }
     };
 

@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Platform } from 'react-native';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const NotificationContext = createContext();
 
@@ -52,7 +53,14 @@ export const NotificationProvider = ({ children }) => {
   }
 
   useEffect(() => {
-    registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+    registerForPushNotificationsAsync().then(token => {
+      setExpoPushToken(token);
+      AsyncStorage.setItem('@push_token', token);
+    });
+
+    AsyncStorage.getItem('@push_token').then(token => {
+      if (token) setExpoPushToken(token);
+    });
 
     const notificationListener = Notifications.addNotificationReceivedListener(notification => {
       setNotification(notification);
@@ -68,8 +76,21 @@ export const NotificationProvider = ({ children }) => {
     };
   }, []);
 
+  const clearPushToken = async () => {
+    try {
+      await AsyncStorage.removeItem('@push_token');
+      setExpoPushToken('');
+    } catch (error) {
+      console.error('Error clearing push token:', error);
+    }
+  };
+
   return (
-    <NotificationContext.Provider value={{ expoPushToken, notification }}>
+    <NotificationContext.Provider value={{ 
+      expoPushToken, 
+      notification,
+      clearPushToken
+    }}>
       {children}
     </NotificationContext.Provider>
   );

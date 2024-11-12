@@ -4,7 +4,7 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { HomeScreen } from '../screens/HomeScreen';
 import UserProfileScreen from '../screens/profile/UserProfileScreen';
 import CustomDrawerContent from './customDrawerContent';
-
+import OrdersScreen from '../screens/orders/OrdersScreen';
 const Drawer = createDrawerNavigator();
 
 const DrawerNavigator = () => {
@@ -27,13 +27,13 @@ const DrawerNavigator = () => {
           title: 'Perfil'
         }}
       />
-      {/* <Drawer.Screen 
-        name="Settings" 
-        component={SettingsScreen}
+      <Drawer.Screen 
+        name="Orders" 
+        component={OrdersScreen}
         options={{
-          title: 'Configuración'
+          title: 'Pedidos'
         }}
-      /> */}
+      />
     </Drawer.Navigator>
   );
 };

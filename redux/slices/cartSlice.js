@@ -56,6 +56,12 @@ const cartSlice = createSlice({
 // Selectores
 const selectCart = state => state.cart;
 
+// Función auxiliar para parsear precios de manera segura
+const parsePrice = (price) => {
+  const numPrice = Number(price);
+  return isNaN(numPrice) ? 0 : numPrice;
+};
+
 export const selectCartItems = createSelector(
   [selectCart],
   cart => cart.items
@@ -73,7 +79,11 @@ export const selectCartItemsByID = createSelector(
 
 export const selectCartTotal = createSelector(
   [selectCartItems],
-  items => items.reduce((total, item) => total + (item.price * item.quantity), 0)
+  items => items.reduce((total, item) => {
+    const price = parsePrice(item.discounted_price);
+    const quantity = item.quantity || 0;
+    return total + (price * quantity);
+  }, 0)
 );
 
 export const { 

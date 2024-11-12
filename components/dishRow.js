@@ -31,7 +31,7 @@ export default function DishRow({item}) {
                 <Text className='text-gray-700' numberOfLines={2}>{item.product.description}</Text>
             </View>
             <View className='flex-row justify-between items-center'>
-                <Text className='text-green-700 font-bold text-lg'>${item.price}</Text>
+                <Text className='text-green-700 font-bold text-lg'>${item.discounted_price}</Text>
                 <View className='flex-row items-center'>
                     <TouchableOpacity 
                         onPress={handleDecrese}

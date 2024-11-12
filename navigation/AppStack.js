@@ -13,6 +13,8 @@ import PaymentScreen from '../screens/PaymentScreen';
 import DirectionsScreen from '../screens/DirectionsScreen';
 import OrderSuccessScreen from '../screens/OrderSuccessScreen';
 import UserProfileScreen from '../screens/profile/UserProfileScreen';
+import OrdersScreen from '../screens/orders/OrdersScreen';
+import OrderDetailScreen from '../screens/orders/OrderDetailScreen';
 import { TouchableOpacity } from 'react-native';
 import * as Icon from "react-native-feather";
 
@@ -40,6 +42,8 @@ function MainStack() {
         }}
       />
       <Stack.Screen name="UserProfile" component={UserProfileScreen} />
+      <Stack.Screen name="Orders" component={OrdersScreen} />
+      <Stack.Screen name="OrderDetail" component={OrderDetailScreen} />
     </Stack.Navigator>
   );
 }

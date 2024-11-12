@@ -64,10 +64,34 @@ export default function PaymentScreen() {
 
     const handleCreateOrder = async (paymentMethod, paymentStatus = 'pending') => {
         try {
-            // Simulamos una respuesta exitosa
-            const mockOrderId = Math.floor(Math.random() * 1000000);
-            dispatch(clearCart());
-            navigation.navigate('OrderSuccess', { orderId: mockOrderId });
+            console.log("userData: ", userData, "\nrestaurant: ", restaurant, "\nuserAddress: ", userAddress, "\ncartItems: ", cartItems, "\ncartTotal: ", cartTotal);
+            const orderData = {
+                user_id: userData.id, // Assuming userData contains the user's ID
+                commerce_id: restaurant.id, // Assuming restaurant object has the commerce ID
+                address_id: userAddress.id, // Using the selected address ID
+                created_at: new Date(),
+                total_amount: cartTotal.toString(),
+                status: paymentStatus,
+                delivery_type: 'Retiro en local', // Since this is pickup only
+                payment_method: paymentMethod,
+                items_quantity: cartItems.length,
+                details: cartItems.map(item => ({
+                    publication_id: item.id,
+                    created_at: new Date(),
+                    quantity: item.quantity.toString(),
+                    amount: item.discounted_price.toString()
+                }))
+            };
+
+            console.log(orderData);
+            const response = await createOrder(orderData).unwrap();
+            
+            if (response) {
+                dispatch(clearCart());
+                navigation.navigate('OrderSuccess', { orderId: response.id });
+            } else {
+                throw new Error('No se recibió respuesta del servidor');
+            }
         } catch (error) {
             console.error('Error creating order:', error);
             Alert.alert('Error', 'No se pudo crear el pedido');

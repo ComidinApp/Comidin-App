@@ -6,7 +6,7 @@ const CustomDrawerContent = ({ navigation }) => {
   const menuItems = [
     { name: 'HomeScreen', title: 'Inicio' },
     { name: 'UserProfile', title: 'Perfil' },
-    { name: 'Settings', title: 'Configuración' },
+    { name: 'Orders', title: 'Pedidos' },
   ];
 
   return (

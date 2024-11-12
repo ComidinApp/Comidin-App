@@ -116,11 +116,7 @@ export default function PersonalDataScreen() {
     setUserData(prev => ({...prev, [field]: value}));
     
     if (field === 'phone_number') {
-      if (value.length < 8 && value.length > 0) {
-        setErrors(prev => ({...prev, phone_number: 'El teléfono debe tener al menos 8 dígitos'}));
-      } else {
-        setErrors(prev => ({...prev, phone_number: ''}));
-      }
+      setErrors(prev => ({...prev, phone_number: ''}));
     } else {
       setErrors(prev => ({...prev, [field]: ''}));
     }

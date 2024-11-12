@@ -19,6 +19,21 @@ export default function OrderSuccessScreen({ route }) {
         });
     };
 
+    const getStatusColor = () => {
+        switch (orderStatus) {
+            case 'confirmed':
+                return 'text-blue-600';
+            case 'ready':
+                return 'text-green-600';
+            case 'completed':
+                return 'text-gray-600';
+            case 'cancelled':
+                return 'text-red-600';
+            default:
+                return 'text-comidin-orange';
+        }
+    };
+
     return (
         <ImageBackground 
             source={require('../assets/images/backgroundOrder.png')} 
@@ -26,17 +41,15 @@ export default function OrderSuccessScreen({ route }) {
             resizeMode="cover"
         >
             <View className="flex-1 relative">
-                {/* Contenido principal */}
                 <View className="flex-1 items-center justify-center p-4">
                     <View className="bg-comidin-light-orange p-6 rounded-2xl w-full max-w-sm border-2 border-comidin-green/40">
-                        {/* Imagen del delivery */}
                         <Image 
                             source={require('../assets/images/orderSuccess.png')}
                             className="w-32 h-32 self-center mb-4"
                             resizeMode="contain"
                         />
                         
-                        <Text className="text-xl font-extrabold text-comidin-brown text-center mb-2">
+                        <Text className={`text-xl font-extrabold ${getStatusColor()} text-center mb-2`}>
                             {message}
                         </Text>
 
@@ -48,7 +61,6 @@ export default function OrderSuccessScreen({ route }) {
                     </View>
                 </View>
 
-                {/* Botón Volver */}
                 <View className="absolute bottom-10 left-0 right-0 px-4">
                     <TouchableOpacity
                         onPress={handleBackToHome}

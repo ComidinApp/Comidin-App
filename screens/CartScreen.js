@@ -74,7 +74,7 @@ export default function CartScreen() {
                                 <Text className="font-bold" style={{color: 'black'}}>{item.quantity}</Text>
                                 <Image className="h-14 w-14 rounded-full" source={{uri: item.product.image_url}}/>
                                 <Text className="flex-1 font-bold text-gray-700">{item.product.name}</Text>
-                                <Text className="font-bold text-gray-700">${item.price}</Text>
+                                <Text className="font-bold text-gray-700">${item.discounted_price}</Text>
                                 <View className="flex-row items-center space-x-2">
                                     <TouchableOpacity 
                                         onPress={() => !isMinQuantity && dispatch(removeToCart({

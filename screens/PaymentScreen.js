@@ -14,6 +14,7 @@ import { useDispatch } from 'react-redux';
 import { selectCurrentAddress } from '../redux/slices/addressSlice';
 import { clearCart } from '../redux/slices/cartSlice';
 import * as Linking from 'expo-linking';
+import { useNotification } from '../context/NotificationContext'; // Importar el hook
 
 export default function PaymentScreen() {
     const navigation = useNavigation();
@@ -25,6 +26,7 @@ export default function PaymentScreen() {
     const userAddress = useSelector(selectCurrentAddress);
     const [selectedMethod, setSelectedMethod] = useState('');
     const [createOrder] = useCreateOrderMutation();
+    const { expoPushToken } = useNotification(); // Obtener expoPushToken
 
     useEffect(() => {
         // Configurar el listener para las URLs
@@ -64,7 +66,6 @@ export default function PaymentScreen() {
 
     const handleCreateOrder = async (paymentMethod, paymentStatus = 'pending') => {
         try {
-            console.log("userData: ", userData, "\nrestaurant: ", restaurant, "\nuserAddress: ", userAddress, "\ncartItems: ", cartItems, "\ncartTotal: ", cartTotal);
             const orderData = {
                 user_id: userData.id, // Assuming userData contains the user's ID
                 commerce_id: restaurant.id, // Assuming restaurant object has the commerce ID
@@ -80,10 +81,9 @@ export default function PaymentScreen() {
                     created_at: new Date(),
                     quantity: item.quantity.toString(),
                     amount: item.discounted_price.toString()
-                }))
+                })),
+                token: expoPushToken, // Agregar el token a orderData
             };
-
-            console.log(orderData);
             const response = await createOrder(orderData).unwrap();
             
             if (response) {

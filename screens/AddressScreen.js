@@ -76,7 +76,11 @@ const AddressScreen = ({ route, navigation }) => {
 
   return (
     <SafeAreaView className='bg-comidin-dark-orange pt-3 w-full'>
-      <ScrollView showsVerticalScrollIndicator={false} className='h-full px-9 bg-comidin-light-orange'>
+      <ScrollView 
+        showsVerticalScrollIndicator={false} 
+        className='h-full px-9 bg-comidin-light-orange'
+        contentContainerStyle={{ paddingBottom: 24 }}
+      >
         <View className='items-center w-full'>
           <Text className='font-bold text-3xl text-comidin-dark-orange py-8'>
             Confirma tu dirección
@@ -136,7 +140,7 @@ const AddressScreen = ({ route, navigation }) => {
             capitalize="words"
           />
 
-          <View className="mt-6 w-full mb-6 gap-4">
+          <View className="mt-6 w-full mb-8">
             <CustomButton 
               text="Confirmar Dirección"
               onPress={handleConfirm}

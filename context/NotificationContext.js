@@ -63,16 +63,17 @@ export const NotificationProvider = ({ children }) => {
     });
 
     const notificationListener = Notifications.addNotificationReceivedListener(notification => {
+      console.log('Notificación recibida:', notification);
       setNotification(notification);
     });
 
     const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log(response);
+      console.log('Respuesta a la notificación:', response);
     });
 
     return () => {
-      Notifications.removeNotificationSubscription(notificationListener);
-      Notifications.removeNotificationSubscription(responseListener);
+      Notifications.removeNotificationSubscription(notificationListener.current);
+      Notifications.removeNotificationSubscription(responseListener.current);
     };
   }, []);
 

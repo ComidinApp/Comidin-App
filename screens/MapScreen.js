@@ -5,7 +5,9 @@ import * as Location from 'expo-location'
 import CustomButton from "../components/formElements/CustomButton.js";
 import { useNavigation } from '@react-navigation/native';
 
-export default function Map() {
+export default function Map({ route }) {
+  const fromSaved = route.params?.fromSaved;
+  
   const initialLocation = {
     latitude: -31.419687,
     longitude: -64.188938,
@@ -92,7 +94,14 @@ export default function Map() {
 
       if (reverseGeocode.length > 0) {
         const informationLocation = {...reverseGeocode[0], latitude: `${draggableMarkerCoords.latitude}`, longitude: `${draggableMarkerCoords.longitude}`}
-        navigation.navigate('Address', { location: informationLocation });
+        // Si venimos desde SavedAddresses, saltamos la pantalla de Address
+        if (fromSaved) {
+          // Aquí podrías llamar directamente a tu API para guardar la dirección
+          // y luego navegar de vuelta a SavedAddresses
+          navigation.navigate('SavedAddresses');
+        } else {
+          navigation.navigate('Address', { location: informationLocation });
+        }
       }
     }
   };

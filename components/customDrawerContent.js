@@ -7,6 +7,7 @@ const CustomDrawerContent = ({ navigation }) => {
     { name: 'HomeScreen', title: 'Inicio' },
     { name: 'UserProfile', title: 'Perfil' },
     { name: 'Orders', title: 'Pedidos' },
+    { name: 'SavedAddresses', title: 'Direcciones' },
   ];
 
   return (

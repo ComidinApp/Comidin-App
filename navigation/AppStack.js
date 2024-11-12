@@ -17,6 +17,7 @@ import OrdersScreen from '../screens/orders/OrdersScreen';
 import OrderDetailScreen from '../screens/orders/OrderDetailScreen';
 import { TouchableOpacity } from 'react-native';
 import * as Icon from "react-native-feather";
+import SavedAddressesScreen from '../screens/SavedAddressesScreen';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -44,6 +45,7 @@ function MainStack() {
       <Stack.Screen name="UserProfile" component={UserProfileScreen} />
       <Stack.Screen name="Orders" component={OrdersScreen} />
       <Stack.Screen name="OrderDetail" component={OrderDetailScreen} />
+      <Stack.Screen name="SavedAddresses" component={SavedAddressesScreen} />
     </Stack.Navigator>
   );
 }

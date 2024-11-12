@@ -20,6 +20,18 @@ const formatDate = (dateString) => {
   });
 };
 
+// Función para traducir el estado
+const translateStatus = (status) => {
+  const statusMap = {
+    'pending': 'Pendiente',
+    'completed': 'Completado',
+    'confirmed': 'Confirmado',
+    'cancelled': 'Cancelado',
+    'refunded': 'Reembolsado'
+  };
+  return statusMap[status] || status;
+};
+
 // Componente para cada pedido
 const OrderCard = ({ order, onPress }) => (
   <TouchableOpacity 
@@ -33,11 +45,11 @@ const OrderCard = ({ order, onPress }) => (
       <Text className={`font-bold ${
         order.status === 'ready' ? 'text-green-600' :
         order.status === 'pending' ? 'text-yellow-600' :
+        order.status === 'completed' ? 'text-green-600' :
+        order.status === 'cancelled' ? 'text-red-600' :
         'text-gray-600'
       }`}>
-        {order.status === 'ready' ? 'Listo para retirar' :
-         order.status === 'pending' ? 'Pendiente' :
-         order.status}
+        {translateStatus(order.status)}
       </Text>
     </View>
     

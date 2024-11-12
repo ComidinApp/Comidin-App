@@ -48,6 +48,7 @@ export const useOrderStatus = (orderId) => {
                 const notificationListener = Notifications.addNotificationReceivedListener(
                     async (notification) => {
                         const data = notification.request.content.data;
+                        console.log('Notificación recibida:', data);
                         
                         // Verificar si la notificación es para este pedido
                         if (data.orderId === orderId) {

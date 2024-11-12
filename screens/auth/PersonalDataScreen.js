@@ -9,6 +9,14 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { useDispatch } from 'react-redux';
 import { useAuth } from '../../context/AuthContext';
 
+// Agregar el objeto de estilos para el DatePicker
+const datePickerCustomStyle = {
+  headerBackgroundColor: '#D67030',
+  headerTextColor: 'white',
+  confirmButtonColor: '#D67030',
+  cancelButtonColor: '#D67030',
+};
+
 export default function PersonalDataScreen() {
   const navigation = useNavigation();
   const route = useRoute();
@@ -192,6 +200,9 @@ export default function PersonalDataScreen() {
             maximumDate={new Date()}
             minimumDate={new Date(1900, 0, 1)}
             locale="es-ES"
+            customHeaderIOS={datePickerCustomStyle}
+            confirmTextIOS="Confirmar"
+            cancelTextIOS="Cancelar"
           />
 
           <View className='mt-5 w-full'>

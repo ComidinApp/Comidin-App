@@ -23,6 +23,8 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.comidin.android",
+      "googleServicesFile": "./google-services.json",
+      "useNextNotificationsApi": true,
       "intentFilters": [
         {
           "action": "VIEW",
@@ -35,6 +37,12 @@
           "category": ["BROWSABLE", "DEFAULT"]
         }
       ]
+    },
+    "notification": {
+      "icon": "./assets/images/delivery.png",
+      "color": "#000000",
+      "androidMode": "default",
+      "androidCollapsedTitle": "New notifications"
     },
     "web": {
       "bundler": "metro",

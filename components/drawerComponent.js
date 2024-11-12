@@ -5,6 +5,8 @@ import { HomeScreen } from '../screens/HomeScreen';
 import UserProfileScreen from '../screens/profile/UserProfileScreen';
 import CustomDrawerContent from './customDrawerContent';
 import OrdersScreen from '../screens/orders/OrdersScreen';
+import SavedAddressesScreen from '../screens/SavedAddressesScreen';
+
 const Drawer = createDrawerNavigator();
 
 const DrawerNavigator = () => {
@@ -28,12 +30,19 @@ const DrawerNavigator = () => {
         }}
       />
       <Drawer.Screen 
-        name="Orders" 
-        component={OrdersScreen}
-        options={{
-          title: 'Pedidos'
-        }}
-      />
+          name="Orders" 
+          component={OrdersScreen}
+          options={{
+            title: 'Pedidos'
+          }}
+        />
+        <Drawer.Screen 
+          name="SavedAddresses" 
+          component={SavedAddressesScreen}
+          options={{
+            title: 'Direcciones'
+          }}
+        />
     </Drawer.Navigator>
   );
 };

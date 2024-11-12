@@ -27,13 +27,58 @@ export function AuthProvider({ children }) {
   // Función para cargar los datos del usuario desde el almacenamiento
   const loadUserData = async () => {
     try {
-      const userData = await AsyncStorage.getItem('@user_data');
-      if (userData) {
-        setUser(JSON.parse(userData));
+      setLoading(true);
+      const token = await AsyncStorage.getItem('userToken');
+      const savedUserData = await AsyncStorage.getItem('@user_data');
+      
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      dispatch({ type: 'SIGN_IN', token });
+      
+      if (savedUserData) {
+        // Primero establecemos los datos guardados para tener algo que mostrar inmediatamente
+        const parsedUserData = JSON.parse(savedUserData);
+        reduxDispatch(setUserData(parsedUserData));
+      }
+
+      // Luego actualizamos desde la API
+      if (savedUserData) {
+        const parsedUserData = JSON.parse(savedUserData);
+        showLoading('Actualizando datos...');
+        
+        try {
+          // Recargar datos del usuario
+          const userResult = await reduxDispatch(
+            userApi.endpoints.getUserByEmail.initiate(parsedUserData.email)
+          ).unwrap();
+
+          if (userResult) {
+            reduxDispatch(setUserData(userResult));
+            await AsyncStorage.setItem('@user_data', JSON.stringify(userResult));
+
+            // Recargar dirección
+            const addressResponse = await reduxDispatch(
+              addressApi.endpoints.getAddressByUserId.initiate(userResult.id, {
+                forceRefetch: true
+              })
+            ).unwrap();
+
+            if (addressResponse && Array.isArray(addressResponse) && addressResponse.length > 0) {
+              reduxDispatch(setCurrentAddress(addressResponse[0]));
+              await AsyncStorage.setItem('userAddress', JSON.stringify(addressResponse[0]));
+            }
+          }
+        } catch (error) {
+          console.error('Error loading address:', error);
+        }
       }
     } catch (error) {
       console.error('Error loading user data:', error);
     } finally {
+      hideLoading();
       setLoading(false);
     }
   };

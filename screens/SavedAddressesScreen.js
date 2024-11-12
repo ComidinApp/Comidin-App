@@ -41,8 +41,14 @@ export default function SavedAddressesScreen() {
   const currentAddress = useSelector(state => state.address.currentAddress);
   const { data: addresses, isLoading, refetch } = useGetAddressByUserIdQuery(userData?.id);
 
-  const handleAddNewAddress = () => {
-    navigation.navigate('Location', { screen: 'Map', params: { fromSaved: true } });
+  const handleAddNewAddress = async () => {
+    try {
+      await AsyncStorage.removeItem('userAddress');
+      dispatch(setCurrentAddress(null));
+      // La navegación a Map ocurrirá automáticamente cuando currentAddress sea null
+    } catch (error) {
+      Alert.alert('Error', 'No se pudo iniciar la navegación');
+    }
   };
 
   const handleSetDefault = async (address) => {

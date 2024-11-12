@@ -2,37 +2,63 @@ import AWS from 'aws-sdk';
 
 AWS.config.update({
   region: 'us-east-1', // Tu región de AWS
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+  accessKeyId: process.env.EXPO_PUBLIC_AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.EXPO_PUBLIC_AWS_SECRET_ACCESS_KEY
 });
 
 const sns = new AWS.SNS();
 
 export const subscribeToPlatformEndpoint = async (token, orderId) => {
   try {
-    // Crear un endpoint para el dispositivo
-    const params = {
-      PlatformApplicationArn: process.env.AWS_PLATFORM_APPLICATION_ARN,
-      Token: token,
-      CustomUserData: orderId.toString(), // Identificador único del pedido
-      Attributes: {
-        Enabled: 'true',
-      }
+    // Primero intentamos obtener el endpoint existente
+    const listEndpointsParams = {
+      PlatformApplicationArn: process.env.EXPO_PUBLIC_AWS_PLATFORM_APPLICATION_ARN,
     };
-
-    const endpoint = await sns.createPlatformEndpoint(params).promise();
     
-    // Suscribir el endpoint al tópico específico del pedido
+    const endpoints = await sns.listEndpointsByPlatformApplication(listEndpointsParams).promise();
+    const existingEndpoint = endpoints.Endpoints.find(endpoint => 
+      endpoint.Attributes.Token === token
+    );
+
+    let endpointArn;
+
+    if (existingEndpoint) {
+      // Si existe, actualizamos sus atributos
+      const updateParams = {
+        EndpointArn: existingEndpoint.EndpointArn,
+        Attributes: {
+          Token: token,
+          CustomUserData: orderId.toString(),
+          Enabled: 'true'
+        }
+      };
+      await sns.setEndpointAttributes(updateParams).promise();
+      endpointArn = existingEndpoint.EndpointArn;
+    } else {
+      // Si no existe, creamos uno nuevo
+      const createParams = {
+        PlatformApplicationArn: process.env.EXPO_PUBLIC_AWS_PLATFORM_APPLICATION_ARN,
+        Token: token,
+        CustomUserData: orderId.toString(),
+        Attributes: {
+          Enabled: 'true',
+        }
+      };
+      const endpoint = await sns.createPlatformEndpoint(createParams).promise();
+      endpointArn = endpoint.EndpointArn;
+    }
+    
+    // Suscribir el endpoint al tópico
     const subscribeParams = {
-      TopicArn: `${process.env.AWS_TOPIC_ARN_PREFIX}-${orderId}`,
+      TopicArn: `${process.env.EXPO_PUBLIC_AWS_TOPIC_ARN_PREFIX}`,
       Protocol: 'application',
-      Endpoint: endpoint.EndpointArn,
+      Endpoint: endpointArn,
       ReturnSubscriptionArn: true
     };
 
     const subscription = await sns.subscribe(subscribeParams).promise();
     return {
-      endpointArn: endpoint.EndpointArn,
+      endpointArn: endpointArn,
       subscriptionArn: subscription.SubscriptionArn
     };
   } catch (error) {

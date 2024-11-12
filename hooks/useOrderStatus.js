@@ -9,49 +9,63 @@ export const useOrderStatus = (orderId) => {
     const [message, setMessage] = useState('Tu pedido ha sido realizado con éxito. Pronto te avisaremos cuando puedas retirarlo.');
     const { expoPushToken } = useNotification();
     
-    // Query para obtener el estado actual del pedido
     const { data: orderData, refetch } = useGetOrderStatusQuery(orderId, {
-        pollingInterval: 0, // Desactivamos el polling automático
+        pollingInterval: 0,
     });
+
+    const updateOrderState = (status) => {
+        setOrderStatus(status);
+        
+        // Actualizar el mensaje según el estado
+        switch (status) {
+            case 'confirmed':
+                setMessage('¡Tu pedido ha sido confirmado! Estamos preparándolo.');
+                break;
+            case 'ready':
+                setMessage('¡Tu pedido está listo para retirar!');
+                break;
+            case 'completed':
+                setMessage('¡Gracias por tu compra!');
+                break;
+            case 'cancelled':
+                setMessage('Lo sentimos, tu pedido ha sido cancelado.');
+                break;
+            default:
+                setMessage('Tu pedido ha sido realizado con éxito. Pronto te avisaremos cuando puedas retirarlo.');
+        }
+    };
 
     useEffect(() => {
         const setupNotifications = async () => {
             try {
                 if (!expoPushToken) return;
 
-                // Suscribirse al tópico SNS específico para este pedido
-                await subscribeToPlatformEndpoint(expoPushToken);
+                // Suscribirse al tópico SNS
+                console.log("expoPushToken: ", expoPushToken, "\norderId: ", orderId);
+                await subscribeToPlatformEndpoint(expoPushToken, orderId);
 
                 // Configurar el listener de notificaciones
                 const notificationListener = Notifications.addNotificationReceivedListener(
-                    (notification) => {
+                    async (notification) => {
                         const data = notification.request.content.data;
                         
                         // Verificar si la notificación es para este pedido
                         if (data.orderId === orderId) {
-                            // Actualizar el estado local
-                            setOrderStatus(data.status);
-                            
-                            // Actualizar el mensaje según el estado
-                            switch (data.status) {
-                                case 'confirmed':
-                                    setMessage('¡Tu pedido ha sido confirmado! Estamos preparándolo.');
-                                    break;
-                                case 'ready':
-                                    setMessage('¡Tu pedido está listo para retirar!');
-                                    break;
-                                case 'completed':
-                                    setMessage('¡Gracias por tu compra!');
-                                    break;
-                                case 'cancelled':
-                                    setMessage('Lo sentimos, tu pedido ha sido cancelado.');
-                                    break;
-                                default:
-                                    setMessage('Tu pedido ha sido realizado con éxito. Pronto te avisaremos cuando puedas retirarlo.');
-                            }
+                            // Mostrar notificación push
+                            await Notifications.scheduleNotificationAsync({
+                                content: {
+                                    title: 'Actualización de tu pedido',
+                                    body: data.message || 'Tu pedido ha sido actualizado',
+                                    data: data,
+                                },
+                                trigger: null, // Mostrar inmediatamente
+                            });
 
+                            // Actualizar el estado local
+                            updateOrderState(data.status);
+                            
                             // Actualizar los datos del pedido desde el backend
-                            refetch();
+                            await refetch();
                         }
                     }
                 );
@@ -70,7 +84,7 @@ export const useOrderStatus = (orderId) => {
     // Actualizar el estado cuando cambian los datos del pedido
     useEffect(() => {
         if (orderData) {
-            setOrderStatus(orderData.status);
+            updateOrderState(orderData.status);
         }
     }, [orderData]);
 

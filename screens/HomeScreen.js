@@ -1,16 +1,10 @@
-import React, { useContext } from "react";
-import { View, Text, TextInput, ScrollView, ActivityIndicator, TouchableOpacity } from "react-native";
+import React from "react";
+import { View, Text, TextInput, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { StatusBar } from "expo-status-bar";
 import * as Icon from "react-native-feather";
-import { themeColors } from "../theme/index.js";
 import Categories from "./../components/categories.js";
 import Promotions from "./../components/promotions.js";
 import Restaurant from "./../components/restaurants.js";
-import RestaurantsColumn from "./../components/restaurantColumn.js";
-import FeaturedRow from "./../components/featuredRow.js";
-import { useGetAllCommerceCategoryQuery } from "../redux/apis/commerce.js";
-import SafeArea from "./../components/safeArea.js";
 import { useAuth  } from '../context/AuthContext.js';
 import CustomButton from "../components/formElements/CustomButton.js";
 import { useSelector } from 'react-redux';
